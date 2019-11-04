@@ -1,5 +1,3 @@
-//TEST
-//Test 2
 
 int main() {
 
