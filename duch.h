@@ -29,14 +29,14 @@ class Ghost {
 	char* pacmanY;
 	char map[sizeMapX][sizeMapY];
 	std::deque<Node> deWay;
+
+	void si();
 	
 public:
 	sf::Sprite sprite;
 
 	Ghost(char* pacmanX, char* pacmanY, char map[sizeMapY][sizeMapX]);
 	~Ghost();
-
-	void si();
 };
 
 #endif //GHOST_H
