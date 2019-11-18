@@ -4,7 +4,7 @@
 using namespace std;
 
 #include <SFML/Graphics.hpp>
-#include <thread>
+#include <SFML/System.hpp>
 #include <deque>
 
 #define sizeMapX 20
