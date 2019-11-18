@@ -9,7 +9,7 @@ Ghost::Ghost(char* pacmanX, char* pacmanY, char map[sizeMapY][sizeMapX]) {
 			this->map[i][j] = map[i][j];
 		}
 	}
-	sf::Thread thread();
+	sf::Thread thread(&Ghost::si, this);
 }
 
 Ghost::~Ghost() {
