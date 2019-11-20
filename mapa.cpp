@@ -2,8 +2,16 @@
 
 Mapa::Mapa(sf::Texture &_tiles_tex)
 {
-	fillMap(' ');//For now...
+	fillMap('0');
+
+	if (importMap("mapa.txt"))
+		std::cout << "True\n";
+	else
+		std::cout << "False\n";
+	
 	_tile.setTexture(_tiles_tex);
+	_tile.setTextureRect(sf::IntRect(sf::Vector2i(0,0),sf::Vector2i(TILE_WIDTH,TILE_HEIGHT)));
+
 }
 
 Mapa::~Mapa()
@@ -12,37 +20,24 @@ Mapa::~Mapa()
 
 void Mapa::draw(sf::RenderWindow &win)
 {
+	//Centering tiles
+	if (offset == -1)
+		offset = (win.getView().getSize().x - MAP_WIDTH * TILE_WIDTH) / 2;
+
+	//Drawing tiles
 	for (unsigned int i = 0; i < MAP_HEIGHT; i++)
 	{
 		for (unsigned int j = 0; j < MAP_WIDTH; j++)
 		{
-			switch (_map[j][i])
+			if (_map[j][i] == '#')
 			{
-			case '+':
-				_tile.setTextureRect(sf::IntRect(t_cross*TILE_WIDTH, 0, TILE_WIDTH, TILE_HEIGHT));
-				break;
-			case '|':
-				_tile.setTextureRect(sf::IntRect(t_vertical*TILE_WIDTH, 0, TILE_WIDTH, TILE_HEIGHT));
-				break;
-			case '-':
-				_tile.setTextureRect(sf::IntRect(t_horizontal*TILE_WIDTH, 0, TILE_WIDTH, TILE_HEIGHT));
-				break;
-			case '<':
-				_tile.setTextureRect(sf::IntRect(t_left*TILE_WIDTH, 0, TILE_WIDTH, TILE_HEIGHT));
-				break;
-			case '>':
-				_tile.setTextureRect(sf::IntRect(t_right*TILE_WIDTH, 0, TILE_WIDTH, TILE_HEIGHT));
-				break;
-			case '^':
-				_tile.setTextureRect(sf::IntRect(t_up*TILE_WIDTH, 0, TILE_WIDTH, TILE_HEIGHT));
-				break;
-			case 'V':
-				_tile.setTextureRect(sf::IntRect(t_down*TILE_WIDTH, 0, TILE_WIDTH, TILE_HEIGHT));
-				break;
-			default:
-				_tile.setTextureRect(sf::IntRect(t_corridor*TILE_WIDTH, 0, TILE_WIDTH, TILE_HEIGHT));
-				break;
+				_tile.setPosition(sf::Vector2f(offset + j*TILE_WIDTH, i*TILE_HEIGHT));
+				win.draw(_tile);
 			}
+			else if (_map[j][i] == '0')
+				continue;
+			else
+				std::cout << "WARNING: Undefined tile symbol!\n";
 		}
 	}
 }
@@ -56,6 +51,52 @@ void Mapa::fillMap(char type)
 			this->_map[j][i] = type;
 		}
 	}
+}
+
+bool Mapa::importMap(const char *path)
+{
+	std::ifstream file;
+	file.open(path, std::ios_base::in);
+	if (!file.good())
+		return false;
+
+	char copy_map[MAP_WIDTH][MAP_HEIGHT] = { 0 };
+	for (int i=0;!file.eof() && i < MAP_HEIGHT;i++)
+	{
+		std::string line;
+		file >> line;
+
+		if (line.length() < MAP_WIDTH)
+		{
+			file.close();
+			return false;
+		}
+		else
+		{
+			for (int j = 0; j < MAP_WIDTH; j++)
+			{
+				copy_map[j][i] = line[j];
+			}
+		}
+		if (file.eof() && i + 1 < MAP_HEIGHT)
+		{
+			file.close();
+			return false;
+		}
+	}
+	for (int i = 0; i < MAP_HEIGHT; i++)
+	{
+		for (int j = 0; j < MAP_WIDTH; j++)
+		{
+			if (copy_map[j][i] == '0' || copy_map[j][i] == '#')
+				this->_map[j][i] = copy_map[j][i];
+			else
+				this->_map[j][i] = '0';
+		}
+	}
+
+	file.close();
+	return true;
 }
 
 void Mapa::setTile(unsigned int x, unsigned int y, char type)
