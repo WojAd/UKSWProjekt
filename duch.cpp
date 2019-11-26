@@ -1,14 +1,14 @@
 #include "duch.h"
 
 
-Ghost::Ghost(char* pacmanX, char* pacmanY, char map[sizeMapY][sizeMapX]) {
-	this->pacmanX = pacmanX;
-	this->pacmanY = pacmanY;
-	for (short i = 0; i < sizeMapY; i++) {
-		for (short j = 0; j < sizeMapX; j++) {
-			this->map[i][j] = map[i][j];
-		}
-	}
+Ghost::Ghost(int x, int y) {
+	
+
+	if (!texture.loadFromFile("ghost.png")) {}
+	sprite.setTexture(texture);
+	sprite.setOrigin(0, 0);
+	sprite.setPosition(x, y);
+
 	sf::Thread thread(&Ghost::si, this);
 }
 
@@ -16,9 +16,18 @@ Ghost::~Ghost() {
 	deWay.clear();
 }
 
+void Ghost::run()
+{
+
+}
+
+void Ghost::draw(RenderTarget& target, RenderStates state) const
+{
+	target.draw(this->sprite, state);
+}
+
 void Ghost::si() {
 	while (1) {
-		if (pacmanX == NULL || pacmanY == NULL) { continue; }
 		deque<Node> result;
 		deque<Node> map;
 		for (int i = 0; i < sizeMapY; i++) {
@@ -40,4 +49,23 @@ void Ghost::si() {
 		deWay.clear();
 		for (Node q : result) deWay.push_back(q);
 	}
+}
+
+GhostManager::GhostManager()
+{
+	for (short i = 0; i < 5; i++) {
+		Ghost* newGhost = new Ghost(0, 0);
+		ghosts.push_back(*newGhost);
+		delete newGhost;
+	}
+}
+
+GhostManager::~GhostManager()
+{
+	ghosts.clear();
+}
+
+void GhostManager::updateDestination()
+{
+	deque<Node> nodes;
 }
