@@ -2,13 +2,12 @@
 
 
 Ghost::Ghost(int x, int y) {
-	
-
-	if (!texture.loadFromFile("ghost.png")) {}
+	if (!texture.loadFromFile("ghost.png")) {
+		cout << "Nie mozna otworzyc pliku ghost.png" << endl;
+	}
 	sprite.setTexture(texture);
-	sprite.setOrigin(0, 0);
+	sprite.setOrigin(IMG_WIDTH / 2.0f, IMG_HEIGHT / 2.0f);
 	sprite.setPosition(x, y);
-
 	sf::Thread thread(&Ghost::si, this);
 }
 
@@ -16,14 +15,32 @@ Ghost::~Ghost() {
 	deWay.clear();
 }
 
-void Ghost::run()
+void Ghost::update()
 {
-
+	if (!deWay.empty()) {
+		//Poruszanie sie sciezka
+	}
 }
 
 void Ghost::draw(RenderTarget& target, RenderStates state) const
 {
 	target.draw(this->sprite, state);
+}
+
+float Ghost::left() {
+	return this->sprite.getPosition().x - IMG_WIDTH / 2.0f;
+}
+
+float Ghost::right() {
+	return this->sprite.getPosition().x + IMG_WIDTH / 2.0f;
+}
+
+float Ghost::top() {
+	return this->sprite.getPosition().y - IMG_HEIGHT / 2.0f;
+}
+
+float Ghost::bottom() {
+	return this->sprite.getPosition().y + IMG_HEIGHT / 2.0f;
 }
 
 void Ghost::si() {
@@ -49,23 +66,4 @@ void Ghost::si() {
 		deWay.clear();
 		for (Node q : result) deWay.push_back(q);
 	}
-}
-
-GhostManager::GhostManager()
-{
-	for (short i = 0; i < 5; i++) {
-		Ghost* newGhost = new Ghost(0, 0);
-		ghosts.push_back(*newGhost);
-		delete newGhost;
-	}
-}
-
-GhostManager::~GhostManager()
-{
-	ghosts.clear();
-}
-
-void GhostManager::updateDestination()
-{
-	deque<Node> nodes;
 }

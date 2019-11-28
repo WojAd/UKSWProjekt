@@ -6,10 +6,14 @@ using namespace std;
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <deque>
+#include <iostream>
+using namespace std;
 using namespace sf;
 
 #define sizeMapX 20
 #define sizeMapY 20
+#define IMG_WIDTH 64
+#define IMG_HEIGHT 64
 
 class Node {
 public:
@@ -37,6 +41,10 @@ class Ghost : public Drawable {
 	Vector2f velocity{ 0.0f,0.0f };
 
 	void si();
+	float left();
+	float right();
+	float top();
+	float bottom();
 	
 public:
 	double getX() { return sprite.getPosition().x; }
@@ -45,17 +53,8 @@ public:
 	Ghost(int x, int y);
 	~Ghost();
 
-	void run();
+	void update();
 	void draw(RenderTarget& target, RenderStates state) const override;
-};
-
-class GhostManager {
-	deque<Ghost> ghosts;
-public:
-	GhostManager();
-	~GhostManager();
-	void updateDestination();
-	deque<Ghost> getGhosts() { return ghosts; }
 };
 
 #endif //GHOST_H
