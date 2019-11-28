@@ -2,12 +2,8 @@
 
 Mapa::Mapa(sf::Texture &_tiles_tex)
 {
-	fillMap('0');
-
-	if (importMap("mapa.txt"))
-		std::cout << "True\n";
-	else
-		std::cout << "False\n";
+	if (!importMap("resources/map.txt"))
+		fillMap('0');
 	
 	_tile.setTexture(_tiles_tex);
 	_tile.setTextureRect(sf::IntRect(sf::Vector2i(0,0),sf::Vector2i(TILE_WIDTH,TILE_HEIGHT)));

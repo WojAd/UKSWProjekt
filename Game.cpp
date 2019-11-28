@@ -9,12 +9,24 @@ Game::Game(sf::RenderWindow &win)
 	}
 	else
 		map = new Mapa(tex_tiles);
+
+	pacman = new Pacman(PACMAN_START_X, PACMAN_START_Y, PACMAN_MAX_LIVES, win.getView().getSize().x, win.getView().getSize().y);
+
+	if (!tex_life.loadFromFile(TEXPATH_LIFE))
+	{
+		win.close();
+		getchar();
+	}
+	else
+		life = new sf::Sprite(tex_life);
 }
 
 Game::~Game()
 {
 	delete map;
 	map = nullptr;
+	delete pacman;
+	pacman = nullptr;
 }
 
 void Game::handleEvents(sf::RenderWindow &win)
@@ -35,10 +47,17 @@ void Game::handleEvents(sf::RenderWindow &win)
 
 void Game::update()
 {
-
+	pacman->update();
 }
 
 void Game::draw(sf::RenderWindow &win)
 {
 	map->draw(win);
+	win.draw(*pacman);
+
+	for (short i = 0; i < 3/*pacman.getLives()*/; i++)
+	{
+		life->setPosition(sf::Vector2f(i*LIFE_WIDTH, 50));
+		win.draw(*life);
+	}
 }
