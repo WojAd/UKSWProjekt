@@ -11,6 +11,10 @@ Game::Game(sf::RenderWindow &win)
 		map = new Mapa(tex_tiles);
 
 	pacman = new Pacman(PACMAN_START_X, PACMAN_START_Y, PACMAN_MAX_LIVES, win.getView().getSize().x, win.getView().getSize().y);
+	for (short i = 0; i < GHOST_AMOUNT; i++)
+	{
+		ghosts.push_back(*(new Ghost(200 + i*40, 200)));
+	}
 
 	if (!tex_life.loadFromFile(TEXPATH_LIFE))
 	{
@@ -27,6 +31,7 @@ Game::~Game()
 	map = nullptr;
 	delete pacman;
 	pacman = nullptr;
+	ghosts.clear();
 }
 
 void Game::handleEvents(sf::RenderWindow &win)
@@ -48,12 +53,22 @@ void Game::handleEvents(sf::RenderWindow &win)
 void Game::update()
 {
 	pacman->update();
+
+	for (auto &i : ghosts)
+	{
+		i.update();
+	}
 }
 
 void Game::draw(sf::RenderWindow &win)
 {
 	map->draw(win);
 	win.draw(*pacman);
+
+	for (auto &i : ghosts)
+	{
+		win.draw(i);
+	}
 
 	for (short i = 0; i < 3/*pacman.getLives()*/; i++)
 	{

@@ -3,7 +3,9 @@
 Mapa::Mapa(sf::Texture &_tiles_tex)
 {
 	if (!importMap("resources/map.txt"))
-		fillMap('0');
+		fillMap(' ');
+	else
+		std::cout << "True\n";
 	
 	_tile.setTexture(_tiles_tex);
 	_tile.setTextureRect(sf::IntRect(sf::Vector2i(0,0),sf::Vector2i(TILE_WIDTH,TILE_HEIGHT)));
@@ -30,7 +32,7 @@ void Mapa::draw(sf::RenderWindow &win)
 				_tile.setPosition(sf::Vector2f(offset + j*TILE_WIDTH, i*TILE_HEIGHT));
 				win.draw(_tile);
 			}
-			else if (_map[j][i] == '0')
+			else if (_map[j][i] == ' ')
 				continue;
 			else
 				std::cout << "WARNING: Undefined tile symbol!\n";
@@ -84,10 +86,10 @@ bool Mapa::importMap(const char *path)
 	{
 		for (int j = 0; j < MAP_WIDTH; j++)
 		{
-			if (copy_map[j][i] == '0' || copy_map[j][i] == '#')
+			if (copy_map[j][i] == ' ' || copy_map[j][i] == '#')
 				this->_map[j][i] = copy_map[j][i];
 			else
-				this->_map[j][i] = '0';
+				this->_map[j][i] = ' ';
 		}
 	}
 
