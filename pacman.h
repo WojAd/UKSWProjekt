@@ -2,15 +2,19 @@
 #define PACMAN_H
 
 #include <SFML/Graphics.hpp>
+#include "mapa.h"
 using namespace std;
 using namespace sf;
 
 class Pacman : public Drawable {
 public:
 	//Pacman();
-	Pacman(int x, int y, int lives, int window_width, int window_height);
+	Pacman(float x, float y, int lives, int window_width, int window_height);
 	void update();
 	int window_width, window_height;
+	int getLives();
+	Mapa map;
+	Vector2f getPosition();
 private:
 	Texture texture;
 	Sprite sprite;

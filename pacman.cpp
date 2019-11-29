@@ -4,7 +4,7 @@
 #define IMG_WIDTH 53
 #define IMG_HEIGHT 58
 
-Pacman::Pacman(int x, int y, int lives, int window_width, int window_height) {
+Pacman::Pacman(float x, float y, int lives, int window_width, int window_height) {
 	this->lives = lives;
 	this->window_height = window_height;
 	this->window_width = window_width;
@@ -58,4 +58,14 @@ void Pacman::update() {
 		velocity.x = 0;
 		velocity.y = 0;
 	}
+}
+
+int Pacman::getLives()
+{
+	return this->lives;
+}
+
+Vector2f Pacman::getPosition()
+{
+	return sprite.getPosition();
 }
