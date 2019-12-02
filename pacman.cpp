@@ -4,10 +4,11 @@
 #define IMG_WIDTH 53
 #define IMG_HEIGHT 58
 
-Pacman::Pacman(float x, float y, int lives, int window_width, int window_height) {
+Pacman::Pacman(float x, float y, int lives, int window_width, int window_height, Mapa *map) {
 	this->lives = lives;
 	this->window_height = window_height;
 	this->window_width = window_width;
+	this->map = map;
 	if (!texture.loadFromFile("pacman.png")) {
 		cout << "Nie mozna otworzyc pliku." << endl;
 	}
