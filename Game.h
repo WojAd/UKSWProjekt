@@ -18,6 +18,8 @@
 class Game
 {
 private:
+	sf::RenderWindow *win = nullptr;
+
 	//Textures
 	sf::Texture tex_tiles;
 	//sf::Texture tex_pacman;
@@ -31,8 +33,8 @@ public:
 	Game(sf::RenderWindow &win);
 	~Game();
 
-	void handleEvents(sf::RenderWindow &win);
+	void handleEvents();
 	void update();
-	void draw(sf::RenderWindow &win);
+	void draw();
 };
 #endif

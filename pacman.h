@@ -13,7 +13,7 @@ public:
 	void update();
 	int window_width, window_height;
 	int getLives();
-	Mapa map;
+	//Mapa map;
 	Vector2f getPosition();
 private:
 	Texture texture;

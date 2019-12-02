@@ -19,11 +19,7 @@ class Mapa
 private:
 	char _map[MAP_WIDTH][MAP_HEIGHT];
 	sf::Sprite _tile;//For drawing
-	float offset = -1;//Offset for centering tiles
-
-	//Tiles order in texture
-	const bool t_corridor = 0;
-	const bool t_wall = 1;
+	float offset;//Offset for centering tiles
 
 public:
 	Mapa(sf::Texture &_tiles_tex);
@@ -35,6 +31,9 @@ public:
 	bool importMap(const char *path);
 	void setTile(unsigned int x, unsigned int y, char type);
 	char getTile(unsigned int x, unsigned int y);
+
+	sf::Vector2f tilecoordsToPixels(unsigned int x, unsigned int y);//Returns centre of tile
+	sf::Vector2u pixelsToTilecoords(const sf::Vector2f &coords);
 };
 #endif
 

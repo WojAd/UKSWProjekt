@@ -2,6 +2,8 @@
 
 Game::Game(sf::RenderWindow &win)
 {
+	this->win = &win;
+
 	if (!tex_tiles.loadFromFile(TEXPATH_TILES))
 	{
 		win.close();
@@ -34,15 +36,15 @@ Game::~Game()
 	ghosts.clear();
 }
 
-void Game::handleEvents(sf::RenderWindow &win)
+void Game::handleEvents()
 {
 	sf::Event ev;
-	while (win.pollEvent(ev))
+	while (win->pollEvent(ev))
 	{
 		switch (ev.type)
 		{
 		case sf::Event::Closed:
-			win.close();
+			win->close();
 			break;
 		default:
 			break;
@@ -53,26 +55,32 @@ void Game::handleEvents(sf::RenderWindow &win)
 void Game::update()
 {
 	pacman->update();
-
 	for (auto &i : ghosts)
 	{
 		i.update();
 	}
+
+	//Engine mechanics
+	for (auto &i : ghosts)
+	{
+		//if(i.getSprite()getGlobalBounds().intersects(pacman.getSprtie().getGlobalBounds()))
+			//lose_life();
+	}
 }
 
-void Game::draw(sf::RenderWindow &win)
+void Game::draw()
 {
-	map->draw(win);
-	win.draw(*pacman);
+	map->draw(*win);
+	win->draw(*pacman);
 
 	for (auto &i : ghosts)
 	{
-		win.draw(i);
+		win->draw(i);
 	}
 
 	for (short i = 0; i < 3/*pacman.getLives()*/; i++)
 	{
 		life->setPosition(sf::Vector2f(i*LIFE_WIDTH, 50));
-		win.draw(*life);
+		win->draw(*life);
 	}
 }

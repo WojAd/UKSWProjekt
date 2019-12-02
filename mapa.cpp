@@ -3,13 +3,13 @@
 Mapa::Mapa(sf::Texture &_tiles_tex)
 {
 	if (!importMap("resources/map.txt"))
-		fillMap(' ');
+		fillMap(CORRIDOR);
 	else
 		std::cout << "True\n";
 	
 	_tile.setTexture(_tiles_tex);
 	_tile.setTextureRect(sf::IntRect(sf::Vector2i(0,0),sf::Vector2i(TILE_WIDTH,TILE_HEIGHT)));
-
+	_tile.setOrigin(sf::Vector2f(TILE_WIDTH / 2, TILE_HEIGHT / 2));
 }
 
 Mapa::~Mapa()
@@ -19,23 +19,27 @@ Mapa::~Mapa()
 void Mapa::draw(sf::RenderWindow &win)
 {
 	//Centering tiles
-	if (offset == -1)
-		offset = (win.getView().getSize().x - MAP_WIDTH * TILE_WIDTH) / 2;
+	offset = (win.getView().getSize().x - MAP_WIDTH * TILE_WIDTH) / 2;
 
 	//Drawing tiles
 	for (unsigned int i = 0; i < MAP_HEIGHT; i++)
 	{
 		for (unsigned int j = 0; j < MAP_WIDTH; j++)
 		{
-			if (_map[j][i] == '#')
+			if (_map[j][i] == WALL)
 			{
-				_tile.setPosition(sf::Vector2f(offset + j*TILE_WIDTH, i*TILE_HEIGHT));
+				_tile.setPosition(sf::Vector2f(offset + (float)j * TILE_WIDTH + _tile.getOrigin().x, (float)i * TILE_HEIGHT + _tile.getOrigin().y));
 				win.draw(_tile);
 			}
-			else if (_map[j][i] == ' ')
+			else if (_map[j][i] == CORRIDOR)
+			{
 				continue;
+			}
 			else
-				std::cout << "WARNING: Undefined tile symbol!\n";
+			{
+				_map[j][i] = CORRIDOR;
+				std::cout << "WARNING: Undefined tile symbol on " << j << ", " << i << "!\n";
+			}	
 		}
 	}
 }
@@ -86,10 +90,10 @@ bool Mapa::importMap(const char *path)
 	{
 		for (int j = 0; j < MAP_WIDTH; j++)
 		{
-			if (copy_map[j][i] == ' ' || copy_map[j][i] == '#')
+			if (copy_map[j][i] == CORRIDOR || copy_map[j][i] == WALL)
 				this->_map[j][i] = copy_map[j][i];
 			else
-				this->_map[j][i] = ' ';
+				this->_map[j][i] = CORRIDOR;
 		}
 	}
 
@@ -125,4 +129,18 @@ char Mapa::getTile(unsigned int x, unsigned int y)
 		y = MAP_HEIGHT - 1;
 
 	return _map[x][y];
+}
+
+sf::Vector2f Mapa::tilecoordsToPixels(unsigned int x, unsigned int y)
+{
+	return sf::Vector2f(offset + (float)x * TILE_WIDTH + _tile.getOrigin().x, (float)y * TILE_HEIGHT + _tile.getOrigin().y);
+}
+
+sf::Vector2u Mapa::pixelsToTilecoords(const sf::Vector2f &coords)
+{
+	sf::Vector2u tile_coords;
+	tile_coords.x = (coords.x - this->offset) / TILE_WIDTH;
+	tile_coords.y = (coords.y) / TILE_HEIGHT;
+
+	return tile_coords;
 }
