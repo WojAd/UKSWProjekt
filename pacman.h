@@ -8,13 +8,12 @@ using namespace sf;
 
 class Pacman : public Drawable {
 public:
-	//Pacman();
-	Pacman(float x, float y, int lives, int window_width, int window_height);
+	Pacman(float x, float y, int lives, int window_width, int window_height, Mapa* map);
 	void update();
 	int window_width, window_height;
 	int getLives();
-	//Mapa map;
 	Vector2f getPosition();
+	Sprite getSprite() const;
 private:
 	Texture texture;
 	Sprite sprite;
@@ -26,6 +25,7 @@ private:
 	float right();
 	float top();
 	float bottom();
+	Mapa *map;
 };
 
 #endif
