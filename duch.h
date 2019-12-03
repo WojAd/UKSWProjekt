@@ -39,7 +39,9 @@ class Ghost : public Drawable {
 	Texture texture;
 	const float ghostVelocity{ 4.0f };
 	Vector2f velocity{ 0.0f,0.0f };
-	Mapa* map;
+	Mapa* mapPointer;
+
+	bool findPath;
 
 	void si();
 	float left();
@@ -51,11 +53,12 @@ public:
 	double getX() { return sprite.getPosition().x; }
 	double getY() { return sprite.getPosition().y; }
 
-	Ghost(int x, int y, Mapa* param);
+	Ghost(int x, int y, Mapa* map);
 	~Ghost();
 
 	void update(short pacmanX, short pacmanY);
 	void draw(RenderTarget& target, RenderStates state) const override;
+	bool switchPathFindingOnOff() { return findPath = !findPath; }
 };
 
 #endif //GHOST_H

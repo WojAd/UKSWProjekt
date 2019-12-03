@@ -1,7 +1,7 @@
 #include "duch.h"
 
 
-Ghost::Ghost(int x, int y, Mapa* param) {
+Ghost::Ghost(int x, int y, Mapa* map) {
 	if (!texture.loadFromFile("ghost.png")) {
 		cout << "Nie mozna otworzyc pliku ghost.png" << endl;
 	}
@@ -9,7 +9,9 @@ Ghost::Ghost(int x, int y, Mapa* param) {
 	sprite.setOrigin(IMG_WIDTH / 2.0f, IMG_HEIGHT / 2.0f);
 	sprite.setPosition(x, y);
 	sf::Thread thread(&Ghost::si, this);
-	map = param;
+	destX = -1;
+	destY = -1;
+	mapPointer = map;
 }
 
 Ghost::~Ghost() {
@@ -48,25 +50,22 @@ float Ghost::bottom() {
 
 void Ghost::si() {
 	while (1) {
-		deque<Node> result;
-		deque<Node> map;
-		for (int i = 0; i < sizeMapY; i++) {
-			for (int j = 0; j < sizeMapX; j++) {
-				if (this->map[i][j] == ' ') {
-					map.push_back(Node(i, j));
-				}
-			}
+		if (destX != -1 && findPath) {
+			deque<Node> result;
+			Node destination;
+
+			/* A* path find algorithm */
+
+			deque<Node> closed;
+			deque<Node> open;
+
+			/*________________________*/
+
+			deWay.clear();
+			for (Node q : result) deWay.push_back(q);
 		}
-		Node destination;
-
-		/* A* path find algorithm */
-		
-		deque<Node> closed;
-		deque<Node> open;
-
-		/*________________________*/
-
-		deWay.clear();
-		for (Node q : result) deWay.push_back(q);
+		else {
+			//do nothing
+		}
 	}
 }
