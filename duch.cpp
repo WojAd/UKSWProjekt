@@ -16,8 +16,10 @@ Ghost::~Ghost() {
 	deWay.clear();
 }
 
-void Ghost::update()
+void Ghost::update(short pacmanX, short pacmanY)
 {
+	destX = pacmanX;
+	destY = pacmanY;
 	if (!deWay.empty()) {
 		//Poruszanie sie sciezka
 	}

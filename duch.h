@@ -54,7 +54,7 @@ public:
 	Ghost(int x, int y, Mapa* param);
 	~Ghost();
 
-	void update();
+	void update(short pacmanX, short pacmanY);
 	void draw(RenderTarget& target, RenderStates state) const override;
 };
 
