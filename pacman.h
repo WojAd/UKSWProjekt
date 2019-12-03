@@ -13,6 +13,7 @@ public:
 	int window_width, window_height;
 	int getLives();
 	Vector2f getPosition();
+	Sprite getSprite() const;
 private:
 	Texture texture;
 	Sprite sprite;

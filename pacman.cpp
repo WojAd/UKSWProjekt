@@ -39,19 +39,19 @@ float Pacman::bottom() {
 
 void Pacman::update() {
 	sprite.move(this->velocity);
-	if (Keyboard::isKeyPressed(Keyboard::Key::Left) && left() > 0) {
+	if ((Keyboard::isKeyPressed(Keyboard::Key::Left) && left() > 0) && (map->getTile(left(), sprite.getPosition().y) != WALL)) {
 		velocity.x = -pacVelocity;
 		velocity.y = 0;
 	}
-	else if (Keyboard::isKeyPressed(Keyboard::Key::Right) && right() < window_width) {
+	else if ((Keyboard::isKeyPressed(Keyboard::Key::Right) && right() < window_width) && (map->getTile(right(), sprite.getPosition().y) != WALL)) {
 		velocity.x = pacVelocity;
 		velocity.y = 0;
 	}
-	else if (Keyboard::isKeyPressed(Keyboard::Key::Up) && top() > 0) {
+	else if ((Keyboard::isKeyPressed(Keyboard::Key::Up) && top() > 0) && (map->getTile(sprite.getPosition().x, top()) != WALL)) {
 		velocity.y = -pacVelocity;
 		velocity.x = 0;
 	}
-	else if (Keyboard::isKeyPressed(Keyboard::Key::Down) && bottom() < window_height) {
+	else if ((Keyboard::isKeyPressed(Keyboard::Key::Down) && bottom() < window_height) && (map->getTile(sprite.getPosition().x, bottom()) != WALL)) {
 		velocity.y = pacVelocity;
 		velocity.x = 0;
 	}
@@ -69,4 +69,8 @@ int Pacman::getLives()
 Vector2f Pacman::getPosition()
 {
 	return sprite.getPosition();
+}
+
+Sprite Pacman::getSprite() const {
+	return sprite;
 }
