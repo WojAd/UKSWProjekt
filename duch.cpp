@@ -12,6 +12,7 @@ Ghost::Ghost(int x, int y, Mapa* map) {
 	destX = -1;
 	destY = -1;
 	mapPointer = map;
+	findPath = true;
 }
 
 Ghost::~Ghost() {
@@ -20,10 +21,18 @@ Ghost::~Ghost() {
 
 void Ghost::update(short pacmanX, short pacmanY)
 {
-	destX = pacmanX;
-	destY = pacmanY;
+	destX = pacmanX/TILE_WIDTH;
+	destY = pacmanY/TILE_HEIGHT;
 	if (!deWay.empty()) {
-		//Poruszanie sie sciezka
+		short currTileX = this->sprite.getPosition().x / TILE_WIDTH;
+		short currTileY = this->sprite.getPosition().y / TILE_HEIGHT;
+		short nextTileX = deWay.back().X;
+		short nextTileY = deWay.back().Y;
+		if (currTileY == currTileX) deWay.pop_back();
+		else if (currTileX < nextTileX) right();
+		else if (currTileX > nextTileX) left();
+		else if (currTileY < nextTileY) bottom();
+		else if (currTileY > nextTileY) top();
 	}
 }
 
@@ -51,16 +60,49 @@ float Ghost::bottom() {
 void Ghost::si() {
 	while (1) {
 		if (destX != -1 && findPath) {
-			deque<Node> result;
-			Node destination;
-
 			/* A* path find algorithm */
-
+			short x = this->sprite.getPosition().x/TILE_WIDTH;
+			short y = this->sprite.getPosition().y/TILE_HEIGHT;
+			Node destination(destX,destY);
 			deque<Node> closed;
 			deque<Node> open;
+			closed.push_back(Node(x, y));
+			if (mapPointer->getTile(closed.back().X - 1, closed.back().Y) == CORRIDOR)
+				open.push_back(Node(closed.back().X - 1, closed.back().Y, &closed.back()));
+			if (mapPointer->getTile(closed.back().X + 1, closed.back().Y) == CORRIDOR)
+				open.push_back(Node(closed.back().X + 1, closed.back().Y, &closed.back()));
+			if (mapPointer->getTile(closed.back().X, closed.back().Y - 1) == CORRIDOR)
+				open.push_back(Node(closed.back().X, closed.back().Y - 1, &closed.back()));
+			if (mapPointer->getTile(closed.back().X, closed.back().Y + 1) == CORRIDOR)
+				open.push_back(Node(closed.back().X, closed.back().Y + 1, &closed.back()));
 
-			/*________________________*/
+			while (closed.back() != destination && !open.empty()) {
+				/* core */
+				if (!open.empty()) {
+					Node candidate = open.front();
+					for (Node q : open) {
+						if (q.dCost() < candidate.dCost())
+							candidate = q;
+					}
+					closed.push_back(candidate);
+					if (mapPointer->getTile(closed.back().X - 1, closed.back().Y) == CORRIDOR)
+						open.push_back(Node(closed.back().X - 1, closed.back().Y, &closed.back()));
+					if (mapPointer->getTile(closed.back().X + 1, closed.back().Y) == CORRIDOR)
+						open.push_back(Node(closed.back().X + 1, closed.back().Y, &closed.back()));
+					if (mapPointer->getTile(closed.back().X, closed.back().Y - 1) == CORRIDOR)
+						open.push_back(Node(closed.back().X, closed.back().Y - 1, &closed.back()));
+					if (mapPointer->getTile(closed.back().X, closed.back().Y + 1) == CORRIDOR)
+						open.push_back(Node(closed.back().X, closed.back().Y + 1, &closed.back()));
+				}
+			}
 
+			deque<Node> result;
+			Node currNode(closed.back());
+			result.push_back(currNode);
+			while (currNode.parent != NULL) {
+				currNode = *currNode.parent;
+				result.push_back(currNode);			
+			}
 			deWay.clear();
 			for (Node q : result) deWay.push_back(q);
 		}
