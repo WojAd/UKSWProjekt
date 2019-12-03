@@ -1,4 +1,5 @@
 #include "duch.h"
+#include <assert.h>
 
 Ghost::Ghost(int x, int y, Mapa* map) {
 	if (!texture.loadFromFile("ghost.png")) {
@@ -7,17 +8,14 @@ Ghost::Ghost(int x, int y, Mapa* map) {
 	sprite.setTexture(texture);
 	sprite.setOrigin(IMG_WIDTH / 2.0f, IMG_HEIGHT / 2.0f);
 	sprite.setPosition(x, y);
-	thread = new sf::Thread(&Ghost::si, this);
 	destX = 1;
 	destY = 1;
 	mapPointer = map;
-	findPath = true;
+	findPath = false;
 }
 
 Ghost::~Ghost() {
 	deWay.clear();
-	thread->terminate();
-	delete thread;
 }
 
 void Ghost::update(float destXParam, float destYParam)
@@ -25,19 +23,28 @@ void Ghost::update(float destXParam, float destYParam)
 	sf::Vector2u tile = mapPointer->pixelsToTilecoords(sf::Vector2f(destXParam, destYParam));
 	destX = tile.x;
 	destY = tile.y;
+	if (!findPath) {
+		findPath = true;
+		thread t(&Ghost::si, this);
+		t.join();
+	}
 	if (!deWay.empty()) {
-		sf::Vector2u tile = mapPointer->pixelsToTilecoords(sf::Vector2f(getX()+20, getY()+20));
+		//Tile 0 0 to 152, 20 (srodek)
+		sf::Vector2u tile = mapPointer->pixelsToTilecoords(sf::Vector2f(getX(), getY()));
 		short currTileX = tile.x;
 		short currTileY = tile.y;
 		short nextTileX = deWay.back().X;
 		short nextTileY = deWay.back().Y;
-		if (currTileX == nextTileX && currTileY == nextTileY) deWay.pop_back();
-		else if (currTileX < nextTileX) this->sprite.move(sf::Vector2f(4.0f, 0));
-		else if (currTileX > nextTileX) this->sprite.move(sf::Vector2f(-4.0f, 0));
-		else if (currTileY < nextTileY) this->sprite.move(sf::Vector2f(0, 4.0f));
-		else if (currTileY > nextTileY) this->sprite.move(sf::Vector2f(0, -4.0f));
+		short currPixelX = getX();
+		short currPixelY = getY();
+		short nextPixelX = nextTileX * 40 + 152;
+		short nextPixelY = nextTileY * 40 + 20;
+		if (currPixelX == nextPixelX && currPixelY == nextPixelY) deWay.pop_back();
+		else if (currPixelX < nextPixelX) this->sprite.move(sf::Vector2f(4.0f, 0));
+		else if (currPixelX > nextPixelX) this->sprite.move(sf::Vector2f(-4.0f, 0));
+		else if (currPixelY < nextPixelY) this->sprite.move(sf::Vector2f(0, 4.0f));
+		else if (currPixelY > nextPixelY) this->sprite.move(sf::Vector2f(0, -4.0f));
 	}
-	si();
 }
 
 void Ghost::draw(RenderTarget& target, RenderStates state) const
@@ -46,15 +53,12 @@ void Ghost::draw(RenderTarget& target, RenderStates state) const
 }
 
 void Ghost::si() {
-	//while (1) {
-		cout << this << " " << this->destX << this->destY << endl;
+	cout << "thread" << endl;
 		sf::Vector2u tile = mapPointer->pixelsToTilecoords(sf::Vector2f(getX(), getY()));
 		short x = tile.x;
 		short y = tile.y;
-		cout << x << " " << y << " " << endl;
 		if (destX > 0 && destX < 40 && destY > 0 && destY < 40 && x > 0 && x < 40 && y > 0 && y < 40 && findPath && deWay.empty()) {
 			// A* path find algorithm 
-			cout << "algorytm" << endl;
 			Node destination(destX,destY);
 			deque<Node> closed;
 			deque<Node> open;
@@ -98,15 +102,14 @@ void Ghost::si() {
 			result.push_back(currNode);
 			while (currNode.parent != NULL) {
 				currNode = *currNode.parent;
-				result.push_back(currNode);		
+				result.push_back(currNode);
 			}
 			deWay.clear();
 			for (Node q : result) deWay.push_back(q);
-			cout << "deWay zostal stworzony " << this << " " << deWay.size() << endl;
 		}
 		else {
 			//do nothing
 		}
-	//}
+		findPath = false;
 	
 }

@@ -5,6 +5,7 @@ using namespace std;
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
+#include <thread>
 #include <deque>
 #include <iostream>
 #include "mapa.h"
@@ -15,6 +16,8 @@ using namespace sf;
 #define sizeMapY 20
 #define IMG_WIDTH 40
 #define IMG_HEIGHT 40
+
+enum {north, south, west, east};
 
 class Node {
 public:
@@ -53,7 +56,7 @@ class Ghost : public Drawable {
 	const float ghostVelocity{ 4.0f };
 	Vector2f velocity{ 0.0f,0.0f };
 	Mapa* mapPointer;
-	sf::Thread* thread;
+	short direction;
 
 	bool findPath;
 
