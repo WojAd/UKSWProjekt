@@ -21,6 +21,7 @@ Ghost::~Ghost() {
 
 void Ghost::update(short pacmanX, short pacmanY)
 {
+	
 	destX = pacmanX/TILE_WIDTH;
 	destY = pacmanY/TILE_HEIGHT;
 	if (!deWay.empty()) {
@@ -34,6 +35,7 @@ void Ghost::update(short pacmanX, short pacmanY)
 		else if (currTileY < nextTileY) bottom();
 		else if (currTileY > nextTileY) top();
 	}
+	
 }
 
 void Ghost::draw(RenderTarget& target, RenderStates state) const
@@ -58,9 +60,10 @@ float Ghost::bottom() {
 }
 
 void Ghost::si() {
+	/*
 	while (1) {
 		if (destX != -1 && findPath) {
-			/* A* path find algorithm */
+			/* A* path find algorithm 
 			short x = this->sprite.getPosition().x/TILE_WIDTH;
 			short y = this->sprite.getPosition().y/TILE_HEIGHT;
 			Node destination(destX,destY);
@@ -77,7 +80,7 @@ void Ghost::si() {
 				open.push_back(Node(closed.back().X, closed.back().Y + 1, &closed.back()));
 
 			while (closed.back() != destination && !open.empty()) {
-				/* core */
+				/* core 
 				if (!open.empty()) {
 					Node candidate = open.front();
 					for (Node q : open) {
@@ -110,4 +113,5 @@ void Ghost::si() {
 			//do nothing
 		}
 	}
+	*/
 }
