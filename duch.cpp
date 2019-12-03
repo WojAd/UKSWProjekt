@@ -1,7 +1,7 @@
 #include "duch.h"
 
 
-Ghost::Ghost(int x, int y) {
+Ghost::Ghost(int x, int y, Mapa* param) {
 	if (!texture.loadFromFile("ghost.png")) {
 		cout << "Nie mozna otworzyc pliku ghost.png" << endl;
 	}
@@ -9,6 +9,7 @@ Ghost::Ghost(int x, int y) {
 	sprite.setOrigin(IMG_WIDTH / 2.0f, IMG_HEIGHT / 2.0f);
 	sprite.setPosition(x, y);
 	sf::Thread thread(&Ghost::si, this);
+	map = param;
 }
 
 Ghost::~Ghost() {

@@ -7,20 +7,20 @@ using namespace std;
 #include <SFML/System.hpp>
 #include <deque>
 #include <iostream>
+#include "mapa.h"
 using namespace std;
 using namespace sf;
 
 #define sizeMapX 20
 #define sizeMapY 20
-#define IMG_WIDTH 64
-#define IMG_HEIGHT 64
+#define IMG_WIDTH 40
+#define IMG_HEIGHT 40
 
 class Node {
 public:
 	short X;
 	short Y;
 	Node* parent;
-
 
 	Node() { X = 0; Y = 0; parent = NULL; }
 	Node(short X, short Y) { this->X = X; this->Y = Y; parent = NULL; }
@@ -39,6 +39,7 @@ class Ghost : public Drawable {
 	Texture texture;
 	const float ghostVelocity{ 4.0f };
 	Vector2f velocity{ 0.0f,0.0f };
+	Mapa* map;
 
 	void si();
 	float left();
@@ -50,7 +51,7 @@ public:
 	double getX() { return sprite.getPosition().x; }
 	double getY() { return sprite.getPosition().y; }
 
-	Ghost(int x, int y);
+	Ghost(int x, int y, Mapa* param);
 	~Ghost();
 
 	void update();
