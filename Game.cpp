@@ -12,10 +12,10 @@ Game::Game(sf::RenderWindow &win)
 	else
 		map = new Mapa(tex_tiles);
 
-	pacman = new Pacman(PACMAN_START_X, PACMAN_START_Y, PACMAN_MAX_LIVES, win.getView().getSize().x, win.getView().getSize().y);
+	pacman = new Pacman(PACMAN_START_X, PACMAN_START_Y, PACMAN_MAX_LIVES, win.getView().getSize().x, win.getView().getSize().y, map);
 	for (short i = 0; i < GHOST_AMOUNT; i++)
 	{
-		ghosts.push_back(*(new Ghost(200 + i*40, 200)));
+		ghosts.push_back(*(new Ghost(this->win->getView().getSize().x / 2 - 40 + i*40, this->win->getView().getSize().y/2)));
 	}
 
 	if (!tex_life.loadFromFile(TEXPATH_LIFE))
@@ -70,6 +70,8 @@ void Game::update()
 
 void Game::draw()
 {
+	win->clear();
+
 	map->draw(*win);
 	win->draw(*pacman);
 
