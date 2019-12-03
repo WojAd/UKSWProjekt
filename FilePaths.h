@@ -3,5 +3,6 @@
 
 #define TEXPATH_TILES "resources/textures/tiles.png"
 #define TEXPATH_LIFE "resources/textures/life.png"
+#define TEXPATH_PACMAN "resources/textures/pacman.png"
 
 #endif

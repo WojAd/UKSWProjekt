@@ -3,6 +3,14 @@
 
 #include <SFML/Graphics.hpp>
 #include "mapa.h"
+#include "FilePaths.h"
+
+//#define IMG_WIDTH 53
+//#define IMG_HEIGHT 58
+
+#define IMG_WIDTH 40
+#define IMG_HEIGHT 40
+
 using namespace std;
 using namespace sf;
 

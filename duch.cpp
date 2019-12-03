@@ -1,5 +1,5 @@
 #include "duch.h"
-#include <assert.h>
+#include <Windows.h>
 
 Ghost::Ghost(int x, int y, Mapa* map) {
 	if (!texture.loadFromFile("ghost.png")) {
@@ -11,7 +11,8 @@ Ghost::Ghost(int x, int y, Mapa* map) {
 	destX = 1;
 	destY = 1;
 	mapPointer = map;
-	findPath = false;
+	threading = false;
+	threads = NULL;
 }
 
 Ghost::~Ghost() {
@@ -23,11 +24,17 @@ void Ghost::update(float destXParam, float destYParam)
 	sf::Vector2u tile = mapPointer->pixelsToTilecoords(sf::Vector2f(destXParam, destYParam));
 	destX = tile.x;
 	destY = tile.y;
-	if (!findPath) {
-		findPath = true;
-		thread t(&Ghost::si, this);
-		t.join();
+	if (threading == false) {
+		if (threads != NULL && !threads->joinable()) {
+			delete threads;
+		}
+		else if (threads != NULL && !threads->joinable()) {
+			threads->join();
+		}
+		threading = true;
+		threads = new thread(&Ghost::si, this);
 	}
+	
 	if (!deWay.empty()) {
 		//Tile 0 0 to 152, 20 (srodek)
 		sf::Vector2u tile = mapPointer->pixelsToTilecoords(sf::Vector2f(getX(), getY()));
@@ -39,11 +46,11 @@ void Ghost::update(float destXParam, float destYParam)
 		short currPixelY = getY();
 		short nextPixelX = nextTileX * 40 + 152;
 		short nextPixelY = nextTileY * 40 + 20;
-		if (currPixelX == nextPixelX && currPixelY == nextPixelY) deWay.pop_back();
-		else if (currPixelX < nextPixelX) this->sprite.move(sf::Vector2f(4.0f, 0));
-		else if (currPixelX > nextPixelX) this->sprite.move(sf::Vector2f(-4.0f, 0));
-		else if (currPixelY < nextPixelY) this->sprite.move(sf::Vector2f(0, 4.0f));
-		else if (currPixelY > nextPixelY) this->sprite.move(sf::Vector2f(0, -4.0f));
+		if (currPixelX == nextPixelX && currPixelY == nextPixelY) deWay.pop_back(	);
+		else if (currPixelX < nextPixelX) this->sprite.move(sf::Vector2f(ghostVelocity, 0));
+		else if (currPixelX > nextPixelX) this->sprite.move(sf::Vector2f(-ghostVelocity, 0));
+		else if (currPixelY < nextPixelY) this->sprite.move(sf::Vector2f(0, ghostVelocity));
+		else if (currPixelY > nextPixelY) this->sprite.move(sf::Vector2f(0, -ghostVelocity));
 	}
 }
 
@@ -53,13 +60,13 @@ void Ghost::draw(RenderTarget& target, RenderStates state) const
 }
 
 void Ghost::si() {
-	cout << "thread" << endl;
+		cout << " " << this << " ";
 		sf::Vector2u tile = mapPointer->pixelsToTilecoords(sf::Vector2f(getX(), getY()));
 		short x = tile.x;
 		short y = tile.y;
-		if (destX > 0 && destX < 40 && destY > 0 && destY < 40 && x > 0 && x < 40 && y > 0 && y < 40 && findPath && deWay.empty()) {
+		if (destX > 0 && destX < 40 && destY > 0 && destY < 40 && x > 0 && x < 40 && y > 0 && y < 40 && mapPointer->getTile(destX, destY) != WALL) {
 			// A* path find algorithm 
-			Node destination(destX,destY);
+			Node destination(destX, destY);
 			deque<Node> closed;
 			deque<Node> open;
 			closed.push_back(Node(x, y));
@@ -85,6 +92,7 @@ void Ghost::si() {
 					}
 					open.pop_front();
 					closed.push_back(candidate);
+					//Warto sie zastanowic nad eliminowaniem istniejacych nodesow
 					if (mapPointer->getTile(closed.back().X - 1, closed.back().Y) == CORRIDOR)
 						open.push_back(Node(closed.back().X - 1, closed.back().Y, &closed.back()));
 					if (mapPointer->getTile(closed.back().X + 1, closed.back().Y) == CORRIDOR)
@@ -94,9 +102,12 @@ void Ghost::si() {
 					if (mapPointer->getTile(closed.back().X, closed.back().Y + 1) == CORRIDOR)
 						open.push_back(Node(closed.back().X, closed.back().Y + 1, &closed.back()));
 				}
-				
+				if (open.size() > 200) {
+					threading = false;
+					return;
+				}
 			}
-	
+
 			deque<Node> result;
 			Node currNode(closed.back());
 			result.push_back(currNode);
@@ -110,6 +121,6 @@ void Ghost::si() {
 		else {
 			//do nothing
 		}
-		findPath = false;
-	
+		Sleep(400);
+		threading = false;
 }
