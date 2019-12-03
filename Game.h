@@ -6,7 +6,7 @@
 #include "pacman.h"
 #include "duch.h"
 
-#define PACMAN_START_X 100
+#define PACMAN_START_X 200
 #define PACMAN_START_Y 100
 #define PACMAN_MAX_LIVES 3
 

@@ -40,6 +40,7 @@ public:
 		return result;
 	}
 	bool operator!=(const Node& param) { return (X != param.X || Y != param.Y); }
+	bool operator==(const Node& param) { return (X == param.X && Y == param.Y); }
 };
 
 class Ghost : public Drawable {
@@ -52,14 +53,11 @@ class Ghost : public Drawable {
 	const float ghostVelocity{ 4.0f };
 	Vector2f velocity{ 0.0f,0.0f };
 	Mapa* mapPointer;
+	sf::Thread* thread;
 
 	bool findPath;
 
 	void si();
-	float left();
-	float right();
-	float top();
-	float bottom();
 	
 public:
 	double getX() { return sprite.getPosition().x; }
@@ -68,7 +66,7 @@ public:
 	Ghost(int x, int y, Mapa* map);
 	~Ghost();
 
-	void update(short pacmanX, short pacmanY);
+	void update(float destXParam, float destYParam);
 	void draw(RenderTarget& target, RenderStates state) const override;
 	bool switchPathFindingOnOff() { return findPath = !findPath; }
 };
