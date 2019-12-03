@@ -4,10 +4,9 @@
 using namespace std;
 
 #include <SFML/Graphics.hpp>
-#include <SFML/System.hpp>
-#include <thread>
 #include <deque>
 #include <iostream>
+#include <thread>
 #include "mapa.h"
 using namespace std;
 using namespace sf;
@@ -57,10 +56,11 @@ class Ghost : public Drawable {
 	Vector2f velocity{ 0.0f,0.0f };
 	Mapa* mapPointer;
 	short direction;
-
-	bool findPath;
+	thread* threads;
 
 	void si();
+
+	bool threading;
 	
 public:
 	double getX() { return sprite.getPosition().x; }
@@ -71,7 +71,6 @@ public:
 
 	void update(float destXParam, float destYParam);
 	void draw(RenderTarget& target, RenderStates state) const override;
-	bool switchPathFindingOnOff() { return findPath = !findPath; }
 };
 
 #endif //GHOST_H
