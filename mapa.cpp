@@ -144,3 +144,8 @@ sf::Vector2u Mapa::pixelsToTilecoords(const sf::Vector2f &coords)
 
 	return tile_coords;
 }
+
+float Mapa::getOffset()
+{
+	return offset;
+}
