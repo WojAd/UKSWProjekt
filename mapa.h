@@ -34,6 +34,7 @@ public:
 
 	sf::Vector2f tilecoordsToPixels(unsigned int x, unsigned int y);//Returns centre of tile
 	sf::Vector2u pixelsToTilecoords(const sf::Vector2f &coords);
+	float getOffset();
 };
 #endif
 

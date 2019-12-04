@@ -3,6 +3,22 @@
 Game::Game(sf::RenderWindow &win)
 {
 	this->win = &win;
+	state = READY;
+
+	if (!fnt_default.loadFromFile(FONTPATH_DEFAULT))
+	{
+		win.close();
+		getchar();
+	}
+	else
+	{
+		txt_points.setFont(fnt_default);
+		txt_points.setCharacterSize(TXT_POINTS_SIZE);
+		txt_points.setPosition(sf::Vector2f(TXT_POINTS_X, TXT_POINTS_Y));
+		txt_points.setString(L"Punkty: ");
+		txt_points.setFillColor(sf::Color::Yellow);
+	}
+
 
 	if (!tex_tiles.loadFromFile(TEXPATH_TILES))
 	{
@@ -54,17 +70,21 @@ void Game::handleEvents()
 
 void Game::update()
 {
-	pacman->update();
-	for (auto &i : ghosts)
+	switch (state)
 	{
-		i.update(pacman->getPosition().x, pacman->getPosition().y);
-	}
-
-	//Engine mechanics
-	for (auto &i : ghosts)
-	{
-		//if(i.getSprite()getGlobalBounds().intersects(pacman.getSprtie().getGlobalBounds()))
-			//lose_life();
+	case READY:
+		state = RUNNING;// CHANGE!
+	case RUNNING:
+		game_running();
+		break;
+	case LOSE_LIFE:
+		lose_life();
+		break;
+	case GAME_OVER:
+		game_over();
+		break;
+	default:
+		break;
 	}
 }
 
@@ -80,9 +100,43 @@ void Game::draw()
 		win->draw(i);
 	}
 
-	for (short i = 0; i < 3/*pacman.getLives()*/; i++)
+	win->draw(txt_points);
+	for (short i = 0; i < pacman->getLives(); i++)
 	{
-		life->setPosition(sf::Vector2f(i*LIFE_WIDTH, 50));
+		life->setPosition(sf::Vector2f(i*LIFE_WIDTH + LIFE_X, LIFE_Y));
 		win->draw(*life);
 	}
+}
+
+/*----------------------*/
+/*Game private functions*/
+/*----------------------*/
+void Game::game_running()
+{
+	pacman->update();
+	for (auto &i : ghosts)
+	{
+		i.update(pacman->getPosition().x, pacman->getPosition().y);
+	}
+
+	//Engine mechanics
+	for (auto &i : ghosts)
+	{
+		/*if(i.getSprite()getGlobalBounds().intersects(pacman.getSprtie().getGlobalBounds()))
+		{
+			state = LOSE_LIFE;
+			pacman->setLives(--);
+		}*/
+	}
+}
+
+void Game::lose_life()
+{
+	if (pacman->getLives() <= 0)
+		state = GAME_OVER;
+}
+
+void Game::game_over()
+{
+	//...
 }
