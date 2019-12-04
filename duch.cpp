@@ -164,3 +164,7 @@ void Ghost::si() {
 //open.clear();
 //Sleep(400);
 //threading = false;
+
+Sprite Ghost::getSprite() const {
+	return sprite;
+}

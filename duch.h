@@ -65,6 +65,7 @@ public:
 
 	void update(float destXParam, float destYParam);
 	void draw(RenderTarget& target, RenderStates state) const override;
+	Sprite getSprite() const;
 };
 
 #endif //GHOST_H
