@@ -1,5 +1,6 @@
 #include "duch.h"
 #include <Windows.h>
+#include <assert.h>
 
 Ghost::Ghost(int x, int y, Mapa* map) {
 	if (!texture.loadFromFile("ghost.png")) {
@@ -13,6 +14,11 @@ Ghost::Ghost(int x, int y, Mapa* map) {
 	mapPointer = map;
 	threading = false;
 	threads = NULL;
+	for (int y = 0; y < MAP_HEIGHT; y++)
+		for (int x = 0; x < MAP_WIDTH; x++) {
+			if (map->getTile(x,y) == CORRIDOR)
+				this->map.push_back(Node(x, y));
+		}
 }
 
 Ghost::~Ghost() {
@@ -22,8 +28,8 @@ Ghost::~Ghost() {
 void Ghost::update(float destXParam, float destYParam)
 {
 	sf::Vector2u tile = mapPointer->pixelsToTilecoords(sf::Vector2f(destXParam, destYParam));
-	destX = tile.x;
-	destY = tile.y;
+	destX = (destXParam-152)/40;
+	destY = (destYParam-20)/40;
 	if (threading == false) {
 		if (threads != NULL && !threads->joinable()) {
 			delete threads;
@@ -60,67 +66,101 @@ void Ghost::draw(RenderTarget& target, RenderStates state) const
 }
 
 void Ghost::si() {
-		cout << " " << this << " ";
-		sf::Vector2u tile = mapPointer->pixelsToTilecoords(sf::Vector2f(getX(), getY()));
-		short x = tile.x;
-		short y = tile.y;
-		if (destX > 0 && destX < 40 && destY > 0 && destY < 40 && x > 0 && x < 40 && y > 0 && y < 40 && mapPointer->getTile(destX, destY) != WALL) {
-			// A* path find algorithm 
-			Node destination(destX, destY);
-			deque<Node> closed;
-			deque<Node> open;
-			closed.push_back(Node(x, y));
-			if (mapPointer->getTile(closed.back().X - 1, closed.back().Y) == CORRIDOR)
-				open.push_back(Node(closed.back().X - 1, closed.back().Y, &closed.back()));
-			if (mapPointer->getTile(closed.back().X + 1, closed.back().Y) == CORRIDOR)
-				open.push_back(Node(closed.back().X + 1, closed.back().Y, &closed.back()));
-			if (mapPointer->getTile(closed.back().X, closed.back().Y - 1) == CORRIDOR)
-				open.push_back(Node(closed.back().X, closed.back().Y - 1, &closed.back()));
-			if (mapPointer->getTile(closed.back().X, closed.back().Y + 1) == CORRIDOR)
-				open.push_back(Node(closed.back().X, closed.back().Y + 1, &closed.back()));
-			while (closed.back() != destination && !open.empty()) {
-				// core
-				if (!open.empty()) {
-					Node candidate = open.front();
-					for (Node q : open) {
-						if (q.dCost() + q.distance(Node(destX, destY)) < candidate.dCost() + candidate.distance(Node(destX, destY)))
-							candidate = q;
+	short x = (getX()-152)/40;
+	short y = (getY()-20)/40;
+	//destX, destY
+	Node destination(destX, destY, 0, NULL);
+	//deque<Node> map
+	deque<Node> open;
+	deque<Node> closed;
+	Node currNode(x, y, 0, NULL);
+	closed.push_back(currNode);
+	if (x > 0 && destX > 0 && y > 0 && destY > 0 && x < IMG_WIDTH && destX < IMG_WIDTH && y < IMG_HEIGHT && destY < IMG_HEIGHT && closed.back() != destination && mapPointer->getTile(destX, destY) == CORRIDOR) {
+		while (closed.back() != destination) {
+			for (deque<Node>::iterator i = map.begin(); i < map.end(); i++) {
+				if (closed.back().isNeighbour(*i)) {
+					deque<Node>::iterator found = std::find(open.begin(), open.end(), *i);
+					if (found != open.end()) {
+						if (found->dCost > closed.back().dCost + found->getDistance(closed.back())) {
+							found->dCost = closed.back().dCost + found->getDistance(closed.back());
+							found->parent = &closed.back();
+						}
 					}
-					while (open.front() != candidate) {
-						open.push_back(open.front());
-						open.pop_front();
+					else {
+						open.push_back(*i);
+						open.back().parent = &closed.back();
+						open.back().dCost = closed.back().dCost + open.back().getDistance(closed.back());
 					}
-					open.pop_front();
-					closed.push_back(candidate);
-					//Warto sie zastanowic nad eliminowaniem istniejacych nodesow
-					if (mapPointer->getTile(closed.back().X - 1, closed.back().Y) == CORRIDOR)
-						open.push_back(Node(closed.back().X - 1, closed.back().Y, &closed.back()));
-					if (mapPointer->getTile(closed.back().X + 1, closed.back().Y) == CORRIDOR)
-						open.push_back(Node(closed.back().X + 1, closed.back().Y, &closed.back()));
-					if (mapPointer->getTile(closed.back().X, closed.back().Y - 1) == CORRIDOR)
-						open.push_back(Node(closed.back().X, closed.back().Y - 1, &closed.back()));
-					if (mapPointer->getTile(closed.back().X, closed.back().Y + 1) == CORRIDOR)
-						open.push_back(Node(closed.back().X, closed.back().Y + 1, &closed.back()));
-				}
-				if (open.size() > 200) {
-					threading = false;
-					return;
 				}
 			}
-
-			deque<Node> result;
-			Node currNode(closed.back());
-			result.push_back(currNode);
-			while (currNode.parent != NULL) {
-				currNode = *currNode.parent;
-				result.push_back(currNode);
+			deque<Node>::iterator minimum = open.begin();
+			for (deque<Node>::iterator i = open.begin(); i < open.end(); i++) {
+				if (minimum->dCost > i->dCost) minimum = i;
 			}
-			deWay.clear();
-			for (Node q : result) deWay.push_back(q);
+			closed.push_back(*minimum);
+			open.erase(minimum);
 		}
-		else {
-			//do nothing
+		Node* q = &closed.back();
+		deWay.clear();
+		while (q->parent != NULL) {
+			deWay.push_back(*q);
+			q = q->parent;
 		}
-		Sleep(400);
-		threading = false;
+	}
+	Sleep(400);
+	threading = false;
 }
+
+///* Data */
+//sf::Vector2u tile = mapPointer->pixelsToTilecoords(sf::Vector2f(getX(), getY()));
+//short x = tile.x;
+//short y = tile.y;
+////destX (tile), destY (tile), deque<Node> map
+//deque<Node*> open;
+//deque<Node*> closed;
+//Node* candidate = new Node(x, y, NULL, 0);
+//Node destination(destX, destY);
+
+///* A* Star path finding */
+//while (*closed.back() != destination) {
+//	closed.push_back(new Node(*candidate));
+//	for (Node q : map) {
+//		if (q.isNeighbour(*closed.back())) {
+//			for (Node* o : open) {
+//				if (*o == q) {
+//					if (o->parent->dCost > closed.back()->dCost) {
+//						o->parent = closed.back();
+//						o->dCost = o->getDistance(*closed.back()) + closed.back()->dCost;
+//					}
+//				}
+//				else {
+//					open.push_back(o);
+//					open.back()->parent = closed.back();
+//					open.back()->dCost = open.back()->getDistance(*closed.back()) + closed.back()->dCost;
+//				}
+//			}
+//		}
+//	}
+//	assert(0);
+//	assert(open.size() != 0);
+//	assert(open.size() > 100);
+//	candidate = open.back();
+//	double distanceToDestination = candidate->getDistance(destination);
+//	for (Node* q : open) {
+//		if (distanceToDestination + candidate->dCost > q->getDistance(destination) + q->dCost) {
+//			candidate = q;
+//			distanceToDestination = candidate->getDistance(destination);
+//		}
+//	}
+//}
+///* creating deWay */
+//Node way(*closed.back());
+//deWay.clear();
+//while (way.parent != NULL) {
+//	deWay.push_back(way);
+//	way = *(way.parent);
+//}
+//closed.clear();
+//open.clear();
+//Sleep(400);
+//threading = false;

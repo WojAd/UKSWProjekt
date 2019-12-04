@@ -7,6 +7,7 @@ using namespace std;
 #include <deque>
 #include <iostream>
 #include <thread>
+#include <algorithm>
 #include "mapa.h"
 using namespace std;
 using namespace sf;
@@ -23,32 +24,25 @@ public:
 	short X;
 	short Y;
 	Node* parent;
+	double dCost;
 
-	Node() { X = 0; Y = 0; parent = NULL; }
-	Node(short X, short Y) { this->X = X; this->Y = Y; parent = NULL; }
-	Node(short X, short Y, Node* param) { this->X = X; this->Y = Y; parent = param; }
-	Node(const Node& param) { X = param.X; Y = param.Y; parent = param.parent; }
+	Node() { X = 0; Y = 0; parent = NULL; dCost = 0; }
+	Node(short X, short Y) { this->X = X; this->Y = Y; parent = NULL; dCost = 0; }
+	Node(short X, short Y, Node* param) { this->X = X; this->Y = Y; parent = param; dCost = 0; }
+	Node(const Node& param) { X = param.X; Y = param.Y; parent = param.parent; dCost = param.dCost; }
+	Node(short X, short Y, short dCost, Node* param) { this->X = X; this->Y = Y; parent = param; this->dCost = dCost; }
 	~Node() {};
 
-	bool isNeighbour(Node param) { if (param.X >= X - 1 || X >= param.X - 1 || param.Y >= Y - 1 || Y >= param.Y - 1) return true; else return false; }
-	double distance(Node param) { return sqrt(pow(abs(param.X - X), 2) + pow(abs(param.Y - Y), 2)); }
-	double dCost() {
-		double result = 0;
-		Node q(*this);
-		while (q.parent != NULL) {
-			result += q.distance(*q.parent);
-			q = *(q.parent);
-		}
-		return result;
-	}
-	bool operator!=(const Node& param) { return (X != param.X || Y != param.Y); }
-	bool operator==(const Node& param) { return (X == param.X && Y == param.Y); }
+	bool isNeighbour(Node param) { if (((param.X == X - 1 || X == param.X - 1) && param.Y == Y) || (param.X == X && (param.Y == Y - 1 || Y == param.Y - 1))) return true; else return false; }
+	double getDistance(Node param) { return sqrt(pow(abs(param.X - X), 2) + pow(abs(param.Y - Y), 2)); }
+	bool operator!=(const Node& param) const { return (X != param.X || Y != param.Y); }
+	bool operator==(const Node& param) const { return (X == param.X && Y == param.Y); }
 };
 
 class Ghost : public Drawable {
 	short destX;
 	short destY;
-	char map[sizeMapY][sizeMapX];//Daj mi mape Rafa³ jakoœ
+	deque<Node> map;
 	std::deque<Node> deWay;
 	Sprite sprite;
 	Texture texture;
