@@ -102,7 +102,7 @@ void Ghost::si() {
 		}
 		Node* q = &closed.back();
 		deWay.clear();
-		while (q->parent != NULL) {
+		while (q->parent->parent != NULL) {
 			deWay.push_back(*q);
 			q = q->parent;
 		}
