@@ -66,48 +66,47 @@ void Ghost::draw(RenderTarget& target, RenderStates state) const
 }
 
 void Ghost::si() {
-	short x = (getX()-152)/40;
-	short y = (getY()-20)/40;
-	//destX, destY
-	Node destination(destX, destY, 0, NULL);
-	//deque<Node> map
-	deque<Node> open;
-	deque<Node> closed;
-	Node currNode(x, y, 0, NULL);
-	closed.push_back(currNode);
-	if (x > 0 && destX > 0 && y > 0 && destY > 0 && x < IMG_WIDTH && destX < IMG_WIDTH && y < IMG_HEIGHT && destY < IMG_HEIGHT && closed.back() != destination && mapPointer->getTile(destX, destY) == CORRIDOR) {
-		while (closed.back() != destination) {
-			for (deque<Node>::iterator i = map.begin(); i < map.end(); i++) {
-				if (closed.back().isNeighbour(*i)) {
-					deque<Node>::iterator found = std::find(open.begin(), open.end(), *i);
-					if (found != open.end()) {
-						if (found->dCost > closed.back().dCost + found->getDistance(closed.back())) {
-							found->dCost = closed.back().dCost + found->getDistance(closed.back());
-							found->parent = &closed.back();
+		short x = (getX() - 152) / 40;
+		short y = (getY() - 20) / 40;
+		//destX, destY
+		Node destination(destX, destY, 0, NULL);
+		//deque<Node> map
+		deque<Node> open;
+		deque<Node> closed;
+		Node currNode(x, y, 0, NULL);
+		closed.push_back(currNode);
+		if (x > 0 && destX > 0 && y > 0 && destY > 0 && x < IMG_WIDTH && destX < IMG_WIDTH && y < IMG_HEIGHT && destY < IMG_HEIGHT && closed.back() != destination && mapPointer->getTile(destX, destY) == CORRIDOR) {
+			while (closed.back() != destination) {
+				for (deque<Node>::iterator i = map.begin(); i < map.end(); i++) {
+					if (closed.back().isNeighbour(*i)) {
+						deque<Node>::iterator found = std::find(open.begin(), open.end(), *i);
+						if (found != open.end()) {
+							if (found->dCost > closed.back().dCost + found->getDistance(closed.back())) {
+								found->dCost = closed.back().dCost + found->getDistance(closed.back());
+								found->parent = &closed.back();
+							}
+						}
+						else {
+							open.push_back(*i);
+							open.back().parent = &closed.back();
+							open.back().dCost = closed.back().dCost + open.back().getDistance(closed.back());
 						}
 					}
-					else {
-						open.push_back(*i);
-						open.back().parent = &closed.back();
-						open.back().dCost = closed.back().dCost + open.back().getDistance(closed.back());
-					}
 				}
+				deque<Node>::iterator minimum = open.begin();
+				for (deque<Node>::iterator i = open.begin(); i < open.end(); i++) {
+					if (minimum->dCost > i->dCost) minimum = i;
+				}
+				closed.push_back(*minimum);
+				open.erase(minimum);
 			}
-			deque<Node>::iterator minimum = open.begin();
-			for (deque<Node>::iterator i = open.begin(); i < open.end(); i++) {
-				if (minimum->dCost > i->dCost) minimum = i;
+			Node* q = &closed.back();
+			deWay.clear();
+			while (q->parent != NULL) {
+				deWay.push_back(*q);
+				q = q->parent;
 			}
-			closed.push_back(*minimum);
-			open.erase(minimum);
 		}
-		Node* q = &closed.back();
-		deWay.clear();
-		while (q->parent->parent != NULL) {
-			deWay.push_back(*q);
-			q = q->parent;
-		}
-	}
-	Sleep(400);
 	threading = false;
 }
 
