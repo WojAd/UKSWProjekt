@@ -6,11 +6,13 @@
 #include "pacman.h"
 #include "duch.h"
 
-#define PACMAN_START_X 200
-#define PACMAN_START_Y 100
+#define LOSE_LIFE_FRAME_TIME 120
+
+#define PACMAN_START_X 512
+#define PACMAN_START_Y 620
 #define PACMAN_MAX_LIVES 3
 
-#define GHOST_AMOUNT 2
+#define GHOST_AMOUNT 3
 
 #define LIFE_WIDTH 30
 #define LIFE_HEIGHT 30
@@ -20,6 +22,8 @@
 #define TXT_POINTS_X 5
 #define TXT_POINTS_Y 5
 #define TXT_POINTS_SIZE 18
+
+#define TXT_GAMEOVER_SIZE 72
 
 class Game
 {
@@ -43,6 +47,7 @@ private:
 	sf::Font fnt_default;
 
 	sf::Text txt_points;
+	sf::Text txt_gameover;
 
 	Mapa *map = nullptr;
 	Pacman *pacman = nullptr;
@@ -51,6 +56,8 @@ private:
 
 	/*Game functions*/
 	GAME_STATES state;
+	unsigned int frame_time = 0;
+
 	void game_running();
 	void lose_life();
 	void game_over();

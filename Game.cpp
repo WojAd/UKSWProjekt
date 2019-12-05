@@ -3,6 +3,7 @@
 Game::Game(sf::RenderWindow &win)
 {
 	this->win = &win;
+	sf::Vector2f resolution = win.getView().getSize();
 	state = READY;
 
 	if (!fnt_default.loadFromFile(FONTPATH_DEFAULT))
@@ -17,6 +18,15 @@ Game::Game(sf::RenderWindow &win)
 		txt_points.setPosition(sf::Vector2f(TXT_POINTS_X, TXT_POINTS_Y));
 		txt_points.setString(L"Punkty: ");
 		txt_points.setFillColor(sf::Color::Yellow);
+
+		txt_gameover.setFont(fnt_default);
+		txt_gameover.setCharacterSize(TXT_GAMEOVER_SIZE);
+		txt_gameover.setString(L"GAME OVER!");
+		txt_gameover.setFillColor(sf::Color::Blue);
+		sf::Vector2f txt_go_size;
+		txt_go_size.x = txt_gameover.getLocalBounds().left + txt_gameover.getLocalBounds().width;
+		txt_go_size.y = txt_gameover.getLocalBounds().top + txt_gameover.getLocalBounds().height;
+		txt_gameover.setPosition(resolution.x/2 - txt_go_size.x/2, resolution.y/2 - txt_go_size.y/2);
 	}
 
 
@@ -106,6 +116,9 @@ void Game::draw()
 		life->setPosition(sf::Vector2f(i*LIFE_WIDTH + LIFE_X, LIFE_Y));
 		win->draw(*life);
 	}
+
+	if (state == GAME_OVER)
+		win->draw(txt_gameover);
 }
 
 /*----------------------*/
@@ -122,21 +135,43 @@ void Game::game_running()
 	//Engine mechanics
 	for (auto &i : ghosts)
 	{
-		/*if(i.getSprite()getGlobalBounds().intersects(pacman.getSprtie().getGlobalBounds()))
+		if(i.getSprite().getGlobalBounds().intersects(pacman->getSprite().getGlobalBounds()))
 		{
 			state = LOSE_LIFE;
-			pacman->setLives(--);
-		}*/
+			frame_time = 0;
+			//pacman->setLives(--);
+		}
 	}
 }
 
 void Game::lose_life()
 {
-	if (pacman->getLives() <= 0)
-		state = GAME_OVER;
+	if (frame_time >= LOSE_LIFE_FRAME_TIME)
+	{
+		if (pacman->getLives() <= 0 || sf::Keyboard::isKeyPressed(sf::Keyboard::B))
+			state = GAME_OVER;
+		else
+			state = RUNNING;
+
+		for (auto&i : ghosts)
+		{
+			//i.setPosition();
+		}
+
+		delete pacman;
+		pacman = new Pacman(PACMAN_START_X, PACMAN_START_Y, PACMAN_MAX_LIVES, win->getView().getSize().x, win->getView().getSize().y, map);
+		
+		frame_time = 0;
+	}
+	frame_time++;
 }
 
 void Game::game_over()
 {
-	//...
+	if (frame_time >= LOSE_LIFE_FRAME_TIME)
+	{
+		state = RUNNING;
+		frame_time = 0;
+	}
+	frame_time++;
 }
