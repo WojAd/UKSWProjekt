@@ -1,10 +1,10 @@
 #include "pacman.h"
 
 
-Pacman::Pacman(float x, float y, int lives, int window_width, int window_height, Mapa *map) {
+Pacman::Pacman(float x, float y, int lives, int windowWidth, int windowHeight, Mapa *map) {
 	this->lives = lives;
-	this->window_height = window_height;
-	this->window_width = window_width;
+	this->windowHeight = windowHeight;
+	this->windowWidth = windowWidth;
 	this->map = map;
 	textRect = IntRect(0, 0, FRAME_WIDTH, FRAME_HEIGHT);
 	changeFrameStep = FRAME_WIDTH;
@@ -52,7 +52,7 @@ void Pacman::update() {
 		velocity.y = 0;
 		textRect.top = FRAME_HEIGHT;
 	}
-	else if ((Keyboard::isKeyPressed(Keyboard::Key::Right) && right() < window_width)/* && (map->getTile(right(), sprite.getPosition().y) != WALL)*/) {
+	else if ((Keyboard::isKeyPressed(Keyboard::Key::Right) && right() < windowWidth)/* && (map->getTile(right(), sprite.getPosition().y) != WALL)*/) {
 		velocity.x = pacVelocity;
 		velocity.y = 0;
 		textRect.top = 0;
@@ -62,7 +62,7 @@ void Pacman::update() {
 		velocity.x = 0;
 		textRect.top = FRAME_HEIGHT * 3;
 	}
-	else if ((Keyboard::isKeyPressed(Keyboard::Key::Down) && bottom() < window_height) /*&& (map->getTile(sprite.getPosition().x, bottom()) != WALL)*/) {
+	else if ((Keyboard::isKeyPressed(Keyboard::Key::Down) && bottom() < windowHeight) /*&& (map->getTile(sprite.getPosition().x, bottom()) != WALL)*/) {
 		velocity.y = pacVelocity;
 		velocity.x = 0;
 		textRect.top = FRAME_HEIGHT * 2;
@@ -79,6 +79,11 @@ int Pacman::getLives() {
 
 Vector2f Pacman::getPosition() {
 	return sprite.getPosition();
+}
+
+void Pacman::setPosition(Vector2f &pos) {
+	if (pos.x > windowWidth || pos.y > windowHeight) return;
+	sprite.setPosition(pos);
 }
 
 Sprite Pacman::getSprite() const {

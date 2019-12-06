@@ -21,11 +21,12 @@ using namespace sf;
 
 class Pacman : public Drawable {
 public:
-	Pacman(float x, float y, int lives, int window_width, int window_height, Mapa* map);
+	Pacman(float x, float y, int lives, int windowWidth, int windowHeight, Mapa* map);
 	void update();
-	int window_width, window_height;
+	int windowWidth, windowHeight;
 	int getLives();
 	Vector2f getPosition();
+	void setPosition(Vector2f &pos);
 	Sprite getSprite() const;
 	void setLives(int lives);
 private:
