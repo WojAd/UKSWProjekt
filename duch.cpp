@@ -40,7 +40,23 @@ void Ghost::update(float destXParam, float destYParam)
 		threading = true;
 		threads = new thread(&Ghost::si, this);
 	}
-	
+	if (!newDeWay.empty()) {
+		if (!deWay.empty() && newDeWay.size() - deWay.size() / 4 >= deWay.size() && equal(deWay.begin(), deWay.end()-deWay.size()/4, newDeWay.begin())) newDeWay.clear();
+		else {
+			sf::Vector2u tile = mapPointer->pixelsToTilecoords(sf::Vector2f(getX(), getY()));
+			short currTileX = tile.x;
+			short currTileY = tile.y;
+			Node currNode(currTileX, currTileY);
+			for (deque<Node>::iterator i = newDeWay.begin(); i < newDeWay.end(); i++) {
+				if (currNode == *i) {
+					newDeWay.erase(i, newDeWay.end());
+					break;
+				}
+			}
+			deWay = newDeWay;
+			newDeWay.clear();
+		}
+	}
 	if (!deWay.empty()) {
 		//Tile 0 0 to 152, 20 (srodek)
 		sf::Vector2u tile = mapPointer->pixelsToTilecoords(sf::Vector2f(getX(), getY()));
@@ -52,6 +68,9 @@ void Ghost::update(float destXParam, float destYParam)
 		short currPixelY = getY();
 		short nextPixelX = nextTileX * 40 + 152;
 		short nextPixelY = nextTileY * 40 + 20;
+		Node currNode(currTileX, currTileY);
+		Node nextNode(nextTileX, nextTileY);
+		
 		if (currPixelX == nextPixelX && currPixelY == nextPixelY) deWay.pop_back(	);
 		else if (currPixelX < nextPixelX) this->sprite.move(sf::Vector2f(ghostVelocity, 0));
 		else if (currPixelX > nextPixelX) this->sprite.move(sf::Vector2f(-ghostVelocity, 0));
@@ -75,7 +94,7 @@ void Ghost::si() {
 		deque<Node> closed;
 		Node currNode(x, y, 0, NULL);
 		closed.push_back(currNode);
-		if (x > 0 && destX > 0 && y > 0 && destY > 0 && x < IMG_WIDTH && destX < IMG_WIDTH && y < IMG_HEIGHT && destY < IMG_HEIGHT && closed.back() != destination && mapPointer->getTile(destX, destY) == CORRIDOR) {
+		if ((deWay.empty() || destination != deWay.front()) && x > 0 && destX > 0 && y > 0 && destY > 0 && x < IMG_WIDTH && destX < IMG_WIDTH && y < IMG_HEIGHT && destY < IMG_HEIGHT && closed.back() != destination && mapPointer->getTile(destX, destY) == CORRIDOR) {
 			while (closed.back() != destination) {
 				for (deque<Node>::iterator i = map.begin(); i < map.end(); i++) {
 					if (closed.back().isNeighbour(*i)) {
@@ -101,12 +120,14 @@ void Ghost::si() {
 				open.erase(minimum);
 			}
 			Node* q = &closed.back();
-			deWay.clear();
 			while (q->parent != NULL) {
-				deWay.push_back(*q);
+				newDeWay.push_back(*q);
 				q = q->parent;
 			}
+			x = (getX() - 152) / 40;
+			y = (getY() - 20) / 40;
 		}
+		Sleep(500);
 	threading = false;
 }
 

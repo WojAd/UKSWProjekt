@@ -44,6 +44,7 @@ class Ghost : public Drawable {
 	short destY;
 	deque<Node> map;
 	std::deque<Node> deWay;
+	std::deque<Node> newDeWay;
 	Sprite sprite;
 	Texture texture;
 	const float ghostVelocity{ 4.0f };
