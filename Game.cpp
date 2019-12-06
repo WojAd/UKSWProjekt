@@ -139,7 +139,8 @@ void Game::game_running()
 		{
 			state = LOSE_LIFE;
 			frame_time = 0;
-			//pacman->setLives(--);
+			pacman->setLives(pacman->getLives()-1);
+			break;
 		}
 	}
 }
@@ -148,30 +149,36 @@ void Game::lose_life()
 {
 	if (frame_time >= LOSE_LIFE_FRAME_TIME)
 	{
-		if (pacman->getLives() <= 0 || sf::Keyboard::isKeyPressed(sf::Keyboard::B))
+		if (pacman->getLives() <= 0)
 			state = GAME_OVER;
 		else
+		{
 			state = RUNNING;
 
-		for (auto&i : ghosts)
-		{
-			//i.setPosition();
+			for (auto&i : ghosts)
+			{
+				//i.setPosition();
+			}
+			pacman->setPosition(sf::Vector2f(PACMAN_START_X, PACMAN_START_Y));
 		}
-
-		delete pacman;
-		pacman = new Pacman(PACMAN_START_X, PACMAN_START_Y, PACMAN_MAX_LIVES, win->getView().getSize().x, win->getView().getSize().y, map);
 		
 		frame_time = 0;
 	}
-	frame_time++;
+	else
+	{
+		frame_time++;
+	}
 }
 
 void Game::game_over()
 {
 	if (frame_time >= LOSE_LIFE_FRAME_TIME)
 	{
-		state = RUNNING;
+		win->close();
 		frame_time = 0;
 	}
-	frame_time++;
+	else
+	{
+		frame_time++;
+	}
 }
