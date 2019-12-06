@@ -6,6 +6,7 @@
 #include "FilePaths.h"
 #include"SFML/Graphics.hpp"
 
+
 //#define IMG_WIDTH 53
 //#define IMG_HEIGHT 58
 
@@ -13,6 +14,7 @@
 #define FRAME_HEIGHT 40
 #define IMG_WIDTH 200
 #define IMG_HEIGHT 160
+#define PACMAN_MAX_LIVES 3
 
 using namespace std;
 using namespace sf;
@@ -25,6 +27,7 @@ public:
 	int getLives();
 	Vector2f getPosition();
 	Sprite getSprite() const;
+	void setLives(int lives);
 private:
 	Clock clock;
 	IntRect textRect;

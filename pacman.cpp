@@ -84,3 +84,8 @@ Vector2f Pacman::getPosition() {
 Sprite Pacman::getSprite() const {
 	return sprite;
 }
+
+void Pacman::setLives(int lives) {
+	if (lives > PACMAN_MAX_LIVES || lives < 0) return;
+	this->lives = lives;
+}

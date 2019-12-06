@@ -10,7 +10,7 @@
 
 #define PACMAN_START_X 512
 #define PACMAN_START_Y 620
-#define PACMAN_MAX_LIVES 3
+//#define PACMAN_MAX_LIVES 3
 
 #define GHOST_AMOUNT 3
 
