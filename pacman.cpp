@@ -47,22 +47,26 @@ void Pacman::update() {
 		sprite.setTextureRect(textRect);
 		clock.restart();
 	}
-	if ((Keyboard::isKeyPressed(Keyboard::Key::Left) && left() > 0) /*&& (map->getTile(left(), sprite.getPosition().y) != WALL)*/) {
+	Vector2u leftColision = map->pixelsToTilecoords(Vector2f(left(), sprite.getPosition().y));
+	Vector2u rightColision = map->pixelsToTilecoords(Vector2f(right(), sprite.getPosition().y));
+	Vector2u UpColision = map->pixelsToTilecoords(Vector2f(sprite.getPosition().x, top()));
+	Vector2u DownColision = map->pixelsToTilecoords(Vector2f(sprite.getPosition().x, bottom()));
+	if ((Keyboard::isKeyPressed(Keyboard::Key::Left) && left() > 0) && (map->getTile(leftColision.x, leftColision.y) != WALL)) {
 		velocity.x = -pacVelocity;
 		velocity.y = 0;
 		textRect.top = FRAME_HEIGHT;
 	}
-	else if ((Keyboard::isKeyPressed(Keyboard::Key::Right) && right() < windowWidth)/* && (map->getTile(right(), sprite.getPosition().y) != WALL)*/) {
+	else if ((Keyboard::isKeyPressed(Keyboard::Key::Right) && right() < windowWidth) && (map->getTile(rightColision.x, rightColision.y) != WALL)) {
 		velocity.x = pacVelocity;
 		velocity.y = 0;
 		textRect.top = 0;
 	}
-	else if ((Keyboard::isKeyPressed(Keyboard::Key::Up) && top() > 0) /*&& (map->getTile(sprite.getPosition().x, top()) != WALL)*/) {
+	else if ((Keyboard::isKeyPressed(Keyboard::Key::Up) && top() > 0) && (map->getTile(UpColision.x, UpColision.y) != WALL)) {
 		velocity.y = -pacVelocity;
 		velocity.x = 0;
 		textRect.top = FRAME_HEIGHT * 3;
 	}
-	else if ((Keyboard::isKeyPressed(Keyboard::Key::Down) && bottom() < windowHeight) /*&& (map->getTile(sprite.getPosition().x, bottom()) != WALL)*/) {
+	else if ((Keyboard::isKeyPressed(Keyboard::Key::Down) && bottom() < windowHeight) && (map->getTile(DownColision.x, DownColision.y) != WALL)) {
 		velocity.y = pacVelocity;
 		velocity.x = 0;
 		textRect.top = FRAME_HEIGHT * 2;
