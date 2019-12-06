@@ -29,6 +29,7 @@ public:
 	void setPosition(Vector2f &pos);
 	Sprite getSprite() const;
 	void setLives(int lives);
+	void killPacman();
 private:
 	Clock clock;
 	IntRect textRect;
@@ -36,7 +37,7 @@ private:
 	Texture texture;
 	Sprite sprite;
 	int lives;
-	const float pacVelocity{ 4.0f };
+	float pacVelocity{ 4.0f };
 	Vector2f velocity{ 0.0f,0.0f };
 	void draw(RenderTarget& target, RenderStates state) const override;
 	float left();

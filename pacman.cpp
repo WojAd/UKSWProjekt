@@ -94,3 +94,7 @@ void Pacman::setLives(int lives) {
 	if (lives > PACMAN_MAX_LIVES || lives < 0) return;
 	this->lives = lives;
 }
+
+void Pacman::killPacman(){
+	pacVelocity = 0;
+}
