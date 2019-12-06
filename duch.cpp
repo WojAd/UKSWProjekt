@@ -28,8 +28,8 @@ Ghost::~Ghost() {
 void Ghost::update(float destXParam, float destYParam)
 {
 	sf::Vector2u tile = mapPointer->pixelsToTilecoords(sf::Vector2f(destXParam, destYParam));
-	destX = (destXParam-152)/40;
-	destY = (destYParam-20)/40;
+	destX = (destXParam-132)/40;
+	destY = (destYParam)/40;
 	if (threading == false) {
 		if (threads != NULL && !threads->joinable()) {
 			delete threads;
