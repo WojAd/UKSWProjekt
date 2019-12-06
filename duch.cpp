@@ -53,6 +53,16 @@ void Ghost::update(float destXParam, float destYParam)
 					break;
 				}
 			}
+			if (!currNode.isNeighbour(newDeWay.back()) && currNode.X != newDeWay.back().X && currNode.Y != newDeWay.back().Y) {
+				Node candidate;
+				for (deque<Node>::iterator i = map.begin(); i < map.end(); i++) {
+					if ((currNode.X == i->X && newDeWay.back().Y == i->Y) || (newDeWay.back().X == i->X && currNode.Y == i->Y)) {
+						candidate = *i;
+						break;
+					}
+				}
+				newDeWay.push_back(candidate);
+			}
 			deWay = newDeWay;
 			newDeWay.clear();
 		}
