@@ -4,8 +4,6 @@ Mapa::Mapa(sf::Texture &_tiles_tex)
 {
 	if (!importMap("resources/map.txt"))
 		fillMap(CORRIDOR);
-	else
-		std::cout << "True\n";
 	
 	_tile.setTexture(_tiles_tex);
 	_tile.setTextureRect(sf::IntRect(sf::Vector2i(0,0),sf::Vector2i(TILE_WIDTH,TILE_HEIGHT)));

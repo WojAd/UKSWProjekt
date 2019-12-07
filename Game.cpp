@@ -140,6 +140,7 @@ void Game::game_running()
 			state = LOSE_LIFE;
 			frame_time = 0;
 			pacman->setLives(pacman->getLives()-1);
+			//pacman->killPacman();
 			break;
 		}
 	}
@@ -147,6 +148,8 @@ void Game::game_running()
 
 void Game::lose_life()
 {
+	pacman->update();
+
 	if (frame_time >= LOSE_LIFE_FRAME_TIME)
 	{
 		if (pacman->getLives() <= 0)
@@ -155,10 +158,14 @@ void Game::lose_life()
 		{
 			state = RUNNING;
 
+			short j = 0;
 			for (auto&i : ghosts)
 			{
-				//i.setPosition();
+				i.setPosition(sf::Vector2f(this->win->getView().getSize().x / 2 - TILE_WIDTH + j / GHOST_AMOUNT * 2 * TILE_WIDTH , this->win->getView().getSize().y / 2));
+				i.setPosition(sf::Vector2f(this->win->getView().getSize().x / 2 - 40 + j * 40, this->win->getView().getSize().y / 2));
+				j++;
 			}
+
 			pacman->setPosition(sf::Vector2f(PACMAN_START_X, PACMAN_START_Y));
 		}
 		

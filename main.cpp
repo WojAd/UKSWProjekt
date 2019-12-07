@@ -10,6 +10,8 @@ int main() {
 
 	sf::RenderWindow window(resolution, game_name);
 	window.setFramerateLimit(60);
+	sf::Clock clk;
+	short frames = 0;
 
 	Game g(window);
 	while (window.isOpen())
@@ -19,6 +21,15 @@ int main() {
 		g.draw();
 
 		window.display();
+
+		frames++;
+		if (clk.getElapsedTime().asMilliseconds() >= 1000)
+		{
+			system("cls");
+			std::cout << "FPS: " << frames;
+			clk.restart();
+			frames = 0;
+		}
 	}
 
 	return 0;
