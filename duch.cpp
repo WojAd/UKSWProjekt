@@ -128,6 +128,10 @@ void Ghost::si() {
 				}
 				closed.push_back(*minimum);
 				open.erase(minimum);
+				if (closed.size() > 200) {
+					threading = false;
+					return;
+				}
 			}
 			Node* q = &closed.back();
 			while (q->parent != NULL) {
