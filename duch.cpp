@@ -127,11 +127,10 @@ void Ghost::si() {
 					if (minimum->dCost + minimum->getDistance(destination) > i->dCost + i->getDistance(destination)) minimum = i;
 				}
 				if (closed.size() > 200) {
-					Sleep(200);
+					Sleep(100);
 					threading = false;
 				}
 				closed.push_back(*minimum);
-				cout << closed.back().X << " " << closed.back().Y << " " << closed.back().dCost << endl;
 				open.erase(minimum);
 			}
 			Node* q = &closed.back();
@@ -142,63 +141,9 @@ void Ghost::si() {
 			x = (getX() - 152) / 40;
 			y = (getY() - 20) / 40;
 		}
-		Sleep(200);
+		Sleep(300);
 		threading = false;
 }
-
-///* Data */
-//sf::Vector2u tile = mapPointer->pixelsToTilecoords(sf::Vector2f(getX(), getY()));
-//short x = tile.x;
-//short y = tile.y;
-////destX (tile), destY (tile), deque<Node> map
-//deque<Node*> open;
-//deque<Node*> closed;
-//Node* candidate = new Node(x, y, NULL, 0);
-//Node destination(destX, destY);
-
-///* A* Star path finding */
-//while (*closed.back() != destination) {
-//	closed.push_back(new Node(*candidate));
-//	for (Node q : map) {
-//		if (q.isNeighbour(*closed.back())) {
-//			for (Node* o : open) {
-//				if (*o == q) {
-//					if (o->parent->dCost > closed.back()->dCost) {
-//						o->parent = closed.back();
-//						o->dCost = o->getDistance(*closed.back()) + closed.back()->dCost;
-//					}
-//				}
-//				else {
-//					open.push_back(o);
-//					open.back()->parent = closed.back();
-//					open.back()->dCost = open.back()->getDistance(*closed.back()) + closed.back()->dCost;
-//				}
-//			}
-//		}
-//	}
-//	assert(0);
-//	assert(open.size() != 0);
-//	assert(open.size() > 100);
-//	candidate = open.back();
-//	double distanceToDestination = candidate->getDistance(destination);
-//	for (Node* q : open) {
-//		if (distanceToDestination + candidate->dCost > q->getDistance(destination) + q->dCost) {
-//			candidate = q;
-//			distanceToDestination = candidate->getDistance(destination);
-//		}
-//	}
-//}
-///* creating deWay */
-//Node way(*closed.back());
-//deWay.clear();
-//while (way.parent != NULL) {
-//	deWay.push_back(way);
-//	way = *(way.parent);
-//}
-//closed.clear();
-//open.clear();
-//Sleep(400);
-//threading = false;
 
 Sprite Ghost::getSprite() const {
 	return sprite;
