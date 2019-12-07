@@ -61,7 +61,7 @@ public:
 	double getX() { return sprite.getPosition().x; }
 	double getY() { return sprite.getPosition().y; }
 	sf::Vector2f getPosition() { return sprite.getPosition(); }
-	void setPosition(sf::Vector2f param) { sprite.setPosition(param); }
+	void setPosition(sf::Vector2f param) { sprite.setPosition(param); deWay.clear(); }
 
 	Ghost(int x, int y, Mapa* map);
 	~Ghost();
