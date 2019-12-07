@@ -110,7 +110,7 @@ void Ghost::si() {
 					if (closed.back().isNeighbour(*i)) {
 						deque<Node>::iterator found = std::find(open.begin(), open.end(), *i);
 						if (found != open.end()) {
-							if (found->dCost > closed.back().dCost + found->getDistance(closed.back())) {
+							if (found->dCost + found->getDistance(destination) > closed.back().dCost + found->getDistance(closed.back()) + found->getDistance(destination)) {
 								found->dCost = closed.back().dCost + found->getDistance(closed.back());
 								found->parent = &closed.back();
 							}
@@ -124,14 +124,15 @@ void Ghost::si() {
 				}
 				deque<Node>::iterator minimum = open.begin();
 				for (deque<Node>::iterator i = open.begin(); i < open.end(); i++) {
-					if (minimum->dCost > i->dCost) minimum = i;
+					if (minimum->dCost + minimum->getDistance(destination) > i->dCost + i->getDistance(destination)) minimum = i;
+				}
+				if (closed.size() > 200) {
+					Sleep(200);
+					threading = false;
 				}
 				closed.push_back(*minimum);
+				cout << closed.back().X << " " << closed.back().Y << " " << closed.back().dCost << endl;
 				open.erase(minimum);
-				if (closed.size() > 200) {
-					threading = false;
-					return;
-				}
 			}
 			Node* q = &closed.back();
 			while (q->parent != NULL) {
@@ -141,8 +142,8 @@ void Ghost::si() {
 			x = (getX() - 152) / 40;
 			y = (getY() - 20) / 40;
 		}
-		Sleep(500);
-	threading = false;
+		Sleep(200);
+		threading = false;
 }
 
 ///* Data */
