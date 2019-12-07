@@ -53,7 +53,7 @@ void Ghost::update(float destXParam, float destYParam)
 					break;
 				}
 			}
-			if (!currNode.isNeighbour(newDeWay.back()) && currNode.X != newDeWay.back().X && currNode.Y != newDeWay.back().Y) {
+			/*if (!currNode.isNeighbour(newDeWay.back()) && currNode.X != newDeWay.back().X && currNode.Y != newDeWay.back().Y) {
 				Node candidate;
 				for (deque<Node>::iterator i = map.begin(); i < map.end(); i++) {
 					if ((currNode.X == i->X && newDeWay.back().Y == i->Y) || (newDeWay.back().X == i->X && currNode.Y == i->Y)) {
@@ -62,7 +62,7 @@ void Ghost::update(float destXParam, float destYParam)
 					}
 				}
 				newDeWay.push_back(candidate);
-			}
+			}*/
 			deWay = newDeWay;
 			newDeWay.clear();
 		}
@@ -129,14 +129,16 @@ void Ghost::si() {
 				if (closed.size() > 200) {
 					Sleep(100);
 					threading = false;
+					return;
 				}
 				closed.push_back(*minimum);
 				open.erase(minimum);
 			}
 			Node* q = &closed.back();
+			newDeWay.push_back(*q);
 			while (q->parent != NULL) {
-				newDeWay.push_back(*q);
 				q = q->parent;
+				newDeWay.push_back(*q);
 			}
 			x = (getX() - 152) / 40;
 			y = (getY() - 20) / 40;
