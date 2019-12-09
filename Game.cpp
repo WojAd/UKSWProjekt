@@ -13,10 +13,11 @@ Game::Game(sf::RenderWindow &win)
 	}
 	else
 	{
+		points = 0;
 		txt_points.setFont(fnt_default);
 		txt_points.setCharacterSize(TXT_POINTS_SIZE);
 		txt_points.setPosition(sf::Vector2f(TXT_POINTS_X, TXT_POINTS_Y));
-		txt_points.setString(L"Punkty: ");
+		txt_points.setString(L"Punkty: " + std::to_string(points));
 		txt_points.setFillColor(sf::Color::Yellow);
 
 		txt_gameover.setFont(fnt_default);
