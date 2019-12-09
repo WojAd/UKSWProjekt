@@ -106,8 +106,8 @@ void Ghost::draw(RenderTarget& target, RenderStates state) const
 
 void Ghost::si() {
 
-	short x = (getX() - 152) / 40;
-	short y = (getY() - 20) / 40;
+	short x = (getX() - 132) / 40;
+	short y = (getY()) / 40;
 	//destX, destY
 	Node destination(destX, destY, 0, NULL);
 	//deque<Node> map
@@ -153,11 +153,9 @@ void Ghost::si() {
 			q = q->parent;
 			newDeWay.push_back(*q);
 		}
-		x = (getX() - 152) / 40;
-		y = (getY() - 20) / 40;
 	}
 	threading = false;
-	Sleep(300);
+	Sleep(500);
 }
 
 Sprite Ghost::getSprite() const {
