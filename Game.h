@@ -46,6 +46,7 @@ private:
 	//Fonts
 	sf::Font fnt_default;
 
+	unsigned int points;
 	sf::Text txt_points;
 	sf::Text txt_gameover;
 
