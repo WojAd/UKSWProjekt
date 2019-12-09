@@ -1,6 +1,7 @@
 #include "duch.h"
 #include <Windows.h>
-#include <assert.h>
+
+
 
 Ghost::Ghost(int x, int y, Mapa* map) {
 	if (!texture.loadFromFile("ghost.png")) {
@@ -30,7 +31,7 @@ void Ghost::update(float destXParam, float destYParam)
 	sf::Vector2u tile = mapPointer->pixelsToTilecoords(sf::Vector2f(destXParam, destYParam));
 	destX = (destXParam-132)/40;
 	destY = (destYParam)/40;
-	if (threading == false) {
+	if (threading == false && newDeWay.empty()) {
 		if (threads != NULL && !threads->joinable()) {
 			delete threads;
 		}
@@ -40,7 +41,7 @@ void Ghost::update(float destXParam, float destYParam)
 		threading = true;
 		threads = new thread(&Ghost::si, this);
 	}
-	if (!newDeWay.empty()) {
+	if (!newDeWay.empty() && threading == false) {
 		if (!deWay.empty() && newDeWay.size() - deWay.size() / 4 >= deWay.size() && equal(deWay.begin(), deWay.end()-deWay.size()/4, newDeWay.begin())) newDeWay.clear();
 		else {
 			sf::Vector2u tile = mapPointer->pixelsToTilecoords(sf::Vector2f(getX(), getY()));
@@ -66,6 +67,15 @@ void Ghost::update(float destXParam, float destYParam)
 			deWay = newDeWay;
 			newDeWay.clear();
 		}
+
+		if (threads != NULL && !threads->joinable()) {
+			delete threads;
+		}
+		else if (threads != NULL && !threads->joinable()) {
+			threads->join();
+		}
+		threading = true;
+		threads = new thread(&Ghost::si, this);
 	}
 	if (!deWay.empty()) {
 		//Tile 0 0 to 152, 20 (srodek)
@@ -95,56 +105,59 @@ void Ghost::draw(RenderTarget& target, RenderStates state) const
 }
 
 void Ghost::si() {
-		short x = (getX() - 152) / 40;
-		short y = (getY() - 20) / 40;
-		//destX, destY
-		Node destination(destX, destY, 0, NULL);
-		//deque<Node> map
-		deque<Node> open;
-		deque<Node> closed;
-		Node currNode(x, y, 0, NULL);
-		closed.push_back(currNode);
-		if ((deWay.empty() || destination != deWay.front()) && x > 0 && destX > 0 && y > 0 && destY > 0 && x < IMG_WIDTH && destX < IMG_WIDTH && y < IMG_HEIGHT && destY < IMG_HEIGHT && closed.back() != destination && mapPointer->getTile(destX, destY) == CORRIDOR) {
-			while (closed.back() != destination) {
-				for (deque<Node>::iterator i = map.begin(); i < map.end(); i++) {
-					if (closed.back().isNeighbour(*i)) {
-						deque<Node>::iterator found = std::find(open.begin(), open.end(), *i);
-						if (found != open.end()) {
-							if (found->dCost + found->getDistance(destination) > closed.back().dCost + found->getDistance(closed.back()) + found->getDistance(destination)) {
-								found->dCost = closed.back().dCost + found->getDistance(closed.back());
-								found->parent = &closed.back();
-							}
-						}
-						else {
-							open.push_back(*i);
-							open.back().parent = &closed.back();
-							open.back().dCost = closed.back().dCost + open.back().getDistance(closed.back());
+
+	short x = (getX() - 152) / 40;
+	short y = (getY() - 20) / 40;
+	//destX, destY
+	Node destination(destX, destY, 0, NULL);
+	//deque<Node> map
+	deque<Node> open;
+	deque<Node> closed;
+	open.clear();
+	closed.clear();
+	Node currNode(x, y, 0, NULL);
+	closed.push_back(currNode);
+	if ((deWay.empty() || destination != deWay.front()) && x > 0 && destX > 0 && y > 0 && destY > 0 && x < IMG_WIDTH && destX < IMG_WIDTH && y < IMG_HEIGHT && destY < IMG_HEIGHT && closed.back() != destination && mapPointer->getTile(destX, destY) == CORRIDOR) {
+		while (closed.back() != destination) {
+			for (deque<Node>::iterator i = map.begin(); i < map.end(); i++) {
+				if (closed.back().isNeighbour(*i)) {
+					deque<Node>::iterator found = std::find(open.begin(), open.end(), *i);
+					if (found != open.end()) {
+						if (found->dCost + found->getDistance(destination) > closed.back().dCost + found->getDistance(closed.back()) + found->getDistance(destination)) {
+							found->dCost = closed.back().dCost + found->getDistance(closed.back());
+							found->parent = &closed.back();
 						}
 					}
+					else {
+						open.push_back(*i);
+						open.back().parent = &closed.back();
+						open.back().dCost = closed.back().dCost + open.back().getDistance(closed.back());
+					}
 				}
-				deque<Node>::iterator minimum = open.begin();
-				for (deque<Node>::iterator i = open.begin(); i < open.end(); i++) {
-					if (minimum->dCost + minimum->getDistance(destination) > i->dCost + i->getDistance(destination)) minimum = i;
-				}
-				if (closed.size() > 200) {
-					Sleep(100);
-					threading = false;
-					return;
-				}
-				closed.push_back(*minimum);
-				open.erase(minimum);
 			}
-			Node* q = &closed.back();
-			newDeWay.push_back(*q);
-			while (q->parent != NULL) {
-				q = q->parent;
-				newDeWay.push_back(*q);
+			deque<Node>::iterator minimum = open.begin();
+			for (deque<Node>::iterator i = open.begin(); i < open.end(); i++) {
+				if (minimum->dCost + minimum->getDistance(destination) > i->dCost + i->getDistance(destination)) minimum = i;
 			}
-			x = (getX() - 152) / 40;
-			y = (getY() - 20) / 40;
+			if (closed.size() > 200) {
+				Sleep(100);
+				threading = false;
+				return;
+			}
+			closed.push_back(*minimum);
+			open.erase(minimum);
 		}
-		Sleep(300);
-		threading = false;
+		Node* q = &closed.back();
+		newDeWay.push_back(*q);
+		while (q->parent != NULL) {
+			q = q->parent;
+			newDeWay.push_back(*q);
+		}
+		x = (getX() - 152) / 40;
+		y = (getY() - 20) / 40;
+	}
+	threading = false;
+	Sleep(300);
 }
 
 Sprite Ghost::getSprite() const {
