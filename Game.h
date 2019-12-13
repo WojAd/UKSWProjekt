@@ -19,6 +19,9 @@
 #define LIFE_X 5
 #define LIFE_Y 40
 
+#define COIN_WIDTH 10
+#define COIN_HEIGHT 10
+
 #define TXT_POINTS_X 5
 #define TXT_POINTS_Y 5
 #define TXT_POINTS_SIZE 18
@@ -42,6 +45,7 @@ private:
 	sf::Texture tex_tiles;
 	//sf::Texture tex_pacman;
 	sf::Texture tex_life;
+	sf::Texture tex_coin;
 
 	//Fonts
 	sf::Font fnt_default;
@@ -53,6 +57,7 @@ private:
 	Mapa *map = nullptr;
 	Pacman *pacman = nullptr;
 	sf::Sprite *life = nullptr;
+	sf::Sprite *coin = nullptr;
 	std::vector<Ghost> ghosts;
 
 	/*Game functions*/
@@ -62,6 +67,9 @@ private:
 	void game_running();
 	void lose_life();
 	void game_over();
+
+	void draw_coins();
+	void draw_lives();
 public:
 	Game(sf::RenderWindow &win);
 	~Game();

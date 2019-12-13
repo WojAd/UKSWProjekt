@@ -102,3 +102,7 @@ void Pacman::setLives(int lives) {
 void Pacman::killPacman(){
 	pacVelocity = 0;
 }
+
+void Pacman::revivePacman() {
+	pacVelocity = 4.0f;
+}

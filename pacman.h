@@ -30,6 +30,7 @@ public:
 	Sprite getSprite() const;
 	void setLives(int lives);
 	void killPacman();
+	void revivePacman();
 private:
 	Clock clock;
 	IntRect textRect;

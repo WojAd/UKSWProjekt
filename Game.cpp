@@ -17,8 +17,8 @@ Game::Game(sf::RenderWindow &win)
 		txt_points.setFont(fnt_default);
 		txt_points.setCharacterSize(TXT_POINTS_SIZE);
 		txt_points.setPosition(sf::Vector2f(TXT_POINTS_X, TXT_POINTS_Y));
-		txt_points.setString(L"Punkty: " + std::to_string(points));
 		txt_points.setFillColor(sf::Color::Yellow);
+		txt_points.setString(L"Pkt: " + std::to_string(points));
 
 		txt_gameover.setFont(fnt_default);
 		txt_gameover.setCharacterSize(TXT_GAMEOVER_SIZE);
@@ -37,7 +37,17 @@ Game::Game(sf::RenderWindow &win)
 		getchar();
 	}
 	else
+	{
 		map = new Mapa(tex_tiles);
+		map->setCoinTile(MAP_WIDTH / 2, MAP_HEIGHT / 2, false);
+		map->setCoinTile(MAP_WIDTH / 2 + 1, MAP_HEIGHT / 2, false);
+		map->setCoinTile(MAP_WIDTH / 2 - 1, MAP_HEIGHT / 2, false);
+
+		map->setCoinTile(MAP_WIDTH / 2, MAP_HEIGHT / 2 - 1, false);
+
+		sf::Vector2u pacman_tile = map->pixelsToTilecoords(sf::Vector2f(PACMAN_START_X, PACMAN_START_Y));
+		map->setCoinTile(pacman_tile.x, pacman_tile.y, false);
+	}
 
 	pacman = new Pacman(PACMAN_START_X, PACMAN_START_Y, PACMAN_MAX_LIVES, win.getView().getSize().x, win.getView().getSize().y, map);
 	for (short i = 0; i < GHOST_AMOUNT; i++)
@@ -52,6 +62,17 @@ Game::Game(sf::RenderWindow &win)
 	}
 	else
 		life = new sf::Sprite(tex_life);
+
+	if (!tex_coin.loadFromFile(TEXPATH_COIN))
+	{
+		win.close();
+		getchar();
+	}
+	else
+	{
+		coin = new sf::Sprite(tex_coin);
+		coin->setOrigin(sf::Vector2f(COIN_WIDTH / 2, COIN_HEIGHT / 2));
+	}
 }
 
 Game::~Game()
@@ -60,6 +81,8 @@ Game::~Game()
 	map = nullptr;
 	delete pacman;
 	pacman = nullptr;
+	delete coin;
+	coin = nullptr;
 	ghosts.clear();
 }
 
@@ -104,6 +127,7 @@ void Game::draw()
 	win->clear();
 
 	map->draw(*win);
+	draw_coins();
 	win->draw(*pacman);
 
 	for (auto &i : ghosts)
@@ -112,11 +136,7 @@ void Game::draw()
 	}
 
 	win->draw(txt_points);
-	for (short i = 0; i < pacman->getLives(); i++)
-	{
-		life->setPosition(sf::Vector2f(i*LIFE_WIDTH + LIFE_X, LIFE_Y));
-		win->draw(*life);
-	}
+	draw_lives();
 
 	if (state == GAME_OVER)
 		win->draw(txt_gameover);
@@ -125,6 +145,32 @@ void Game::draw()
 /*----------------------*/
 /*Game private functions*/
 /*----------------------*/
+
+void Game::draw_coins()
+{
+	for (short y = 0; y < MAP_HEIGHT; y++)
+	{
+		for (short x = 0; x < MAP_WIDTH; x++)
+		{
+			if (this->map->getCoinTile(x, y) == true)
+			{
+				coin->setPosition(this->map->tilecoordsToPixels(x, y));
+				win->draw(*coin);
+			}
+		}
+	}
+}
+
+void Game::draw_lives()
+{
+	for (short i = 0; i < pacman->getLives(); i++)
+	{
+		life->setPosition(sf::Vector2f(i*LIFE_WIDTH + LIFE_X, LIFE_Y));
+		win->draw(*life);
+	}
+}
+
+/*MAJOR*/
 void Game::game_running()
 {
 	pacman->update();
@@ -141,9 +187,17 @@ void Game::game_running()
 			state = LOSE_LIFE;
 			frame_time = 0;
 			pacman->setLives(pacman->getLives()-1);
-			//pacman->killPacman();
+			pacman->killPacman();
 			break;
 		}
+	}
+
+	sf::Vector2u pacman_tilepos = map->pixelsToTilecoords(pacman->getPosition());
+	if (map->getCoinTile(pacman_tilepos.x, pacman_tilepos.y) == true)
+	{
+		map->setCoinTile(pacman_tilepos.x, pacman_tilepos.y, false);
+		points += 10;
+		txt_points.setString(L"Pkt: " + std::to_string(points));
 	}
 }
 
@@ -168,6 +222,7 @@ void Game::lose_life()
 			}
 
 			pacman->setPosition(sf::Vector2f(PACMAN_START_X, PACMAN_START_Y));
+			pacman->revivePacman();
 		}
 		
 		frame_time = 0;

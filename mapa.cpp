@@ -8,6 +8,9 @@ Mapa::Mapa(sf::Texture &_tiles_tex)
 	_tile.setTexture(_tiles_tex);
 	_tile.setTextureRect(sf::IntRect(sf::Vector2i(0,0),sf::Vector2i(TILE_WIDTH,TILE_HEIGHT)));
 	_tile.setOrigin(sf::Vector2f(TILE_WIDTH / 2, TILE_HEIGHT / 2));
+
+	//Centering tiles
+	offset = (WINDOW_WIDTH - MAP_WIDTH * TILE_WIDTH) / 2;
 }
 
 Mapa::~Mapa()
@@ -16,9 +19,6 @@ Mapa::~Mapa()
 
 void Mapa::draw(sf::RenderWindow &win)
 {
-	//Centering tiles
-	offset = (win.getView().getSize().x - MAP_WIDTH * TILE_WIDTH) / 2;
-
 	//Drawing tiles
 	for (unsigned int i = 0; i < MAP_HEIGHT; i++)
 	{
@@ -29,7 +29,7 @@ void Mapa::draw(sf::RenderWindow &win)
 				_tile.setPosition(sf::Vector2f(offset + (float)j * TILE_WIDTH + _tile.getOrigin().x, (float)i * TILE_HEIGHT + _tile.getOrigin().y));
 				win.draw(_tile);
 			}
-			else if (_map[j][i] == CORRIDOR)
+			else if (_map[j][i] == CORRIDOR || _map[j][i] == BLANK)
 			{
 				continue;
 			}
@@ -91,7 +91,12 @@ bool Mapa::importMap(const char *path)
 			if (copy_map[j][i] == CORRIDOR || copy_map[j][i] == WALL)
 				this->_map[j][i] = copy_map[j][i];
 			else
-				this->_map[j][i] = CORRIDOR;
+				this->_map[j][i] = BLANK;
+
+			if (this->_map[j][i] == CORRIDOR)
+				_coinmap[j][i] = true;
+			else
+				_coinmap[j][i] = false;
 		}
 	}
 
@@ -127,6 +132,36 @@ char Mapa::getTile(unsigned int x, unsigned int y)
 		y = MAP_HEIGHT - 1;
 
 	return _map[x][y];
+}
+
+void Mapa::setCoinTile(unsigned int x, unsigned int y, bool coin)
+{
+	if (x < 0)
+		x = 0;
+	else if (x >= MAP_WIDTH)
+		x = MAP_WIDTH - 1;
+
+	if (y < 0)
+		y = 0;
+	else if (y >= MAP_HEIGHT)
+		y = MAP_HEIGHT - 1;
+
+	_coinmap[x][y] = coin;
+}
+
+bool Mapa::getCoinTile(unsigned int x, unsigned int y)
+{
+	if (x < 0)
+		x = 0;
+	else if (x >= MAP_WIDTH)
+		x = MAP_WIDTH - 1;
+
+	if (y < 0)
+		y = 0;
+	else if (y >= MAP_HEIGHT)
+		y = MAP_HEIGHT - 1;
+
+	return _coinmap[x][y];
 }
 
 sf::Vector2f Mapa::tilecoordsToPixels(unsigned int x, unsigned int y)

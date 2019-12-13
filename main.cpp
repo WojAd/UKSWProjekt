@@ -5,7 +5,7 @@
 
 int main() {
 	
-	const sf::VideoMode resolution = sf::VideoMode(1024, 760);
+	const sf::VideoMode resolution = sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT);
 	const sf::String game_name = "Pacman";
 
 	sf::RenderWindow window(resolution, game_name);
