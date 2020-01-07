@@ -22,7 +22,6 @@ class Mapa
 private:
 	char _map[MAP_WIDTH][MAP_HEIGHT];
 	bool _coinmap[MAP_WIDTH][MAP_HEIGHT];
-	short _coin_quantity;
 	sf::Sprite _tile;//For drawing
 	float offset;//Offset for centering tiles
 
@@ -38,8 +37,6 @@ public:
 	char getTile(unsigned int x, unsigned int y);
 	void setCoinTile(unsigned int x, unsigned int y, bool coin);
 	bool getCoinTile(unsigned int x, unsigned int y);
-
-	short getCoinQuantity();
 
 	sf::Vector2f tilecoordsToPixels(unsigned int x, unsigned int y);//Returns centre of tile
 	sf::Vector2u pixelsToTilecoords(const sf::Vector2f &coords);

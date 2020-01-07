@@ -192,9 +192,6 @@ void Game::game_running()
 		}
 	}
 
-	if (map->getCoinQuantity() == 0)
-		state = GAME_OVER;
-
 	sf::Vector2u pacman_tilepos = map->pixelsToTilecoords(pacman->getPosition());
 	if (map->getCoinTile(pacman_tilepos.x, pacman_tilepos.y) == true)
 	{
