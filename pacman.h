@@ -38,7 +38,7 @@ private:
 	Texture texture;
 	Sprite sprite;
 	int lives;
-	float pacVelocity{ 4.0f };
+	float pacVelocity{ 4.1f };
 	Vector2f velocity{ 0.0f,0.0f };
 	void draw(RenderTarget& target, RenderStates state) const override;
 	float left();

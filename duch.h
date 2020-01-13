@@ -9,6 +9,7 @@ using namespace std;
 #include <thread>
 #include <algorithm>
 #include "mapa.h"
+#include <vector>
 using namespace std;
 using namespace sf;
 
@@ -43,8 +44,8 @@ class Ghost : public Drawable {
 	short destX;
 	short destY;
 	deque<Node> map;
-	std::deque<Node> deWay;
-	std::deque<Node> newDeWay;
+	std::vector<Node> deWay;
+	std::vector<Node> newDeWay;
 	Sprite sprite;
 	Texture texture;
 	const float ghostVelocity{ 4.0f };

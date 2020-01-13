@@ -48,11 +48,16 @@ void Ghost::update(float destXParam, float destYParam)
 			short currTileX = tile.x;
 			short currTileY = tile.y;
 			Node currNode(currTileX, currTileY);
-			for (deque<Node>::iterator i = newDeWay.begin(); i < newDeWay.end(); i++) {
-				if (currNode == *i) {
-					newDeWay.erase(i, newDeWay.end());
+			vector<Node> temp = newDeWay;
+			for (int i = 0; i < newDeWay.size(); i++) {
+				if (temp.back() == currNode) {
+					for (int j = 0; j < i; j++) newDeWay.pop_back();
 					break;
 				}
+				temp.pop_back();
+			}
+			if (newDeWay.back() == currNode) {
+				newDeWay.pop_back();
 			}
 			deWay = newDeWay;
 			newDeWay.clear();
