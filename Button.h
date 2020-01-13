@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BUTTON_H
+#define BUTTON_H
+
 #include <SFML/Graphics.hpp>
 
 namespace qiwi
@@ -100,3 +102,5 @@ namespace qiwi
 		bool clicked() { return _clicked; }
 	};
 }
+
+#endif

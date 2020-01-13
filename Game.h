@@ -5,6 +5,7 @@
 #include "mapa.h"
 #include "pacman.h"
 #include "duch.h"
+#include "Button.h"
 
 #define LOSE_LIFE_FRAME_TIME 120
 
@@ -28,6 +29,15 @@
 
 #define TXT_GAMEOVER_SIZE 72
 
+#define TXT_PAUSE_Y 200
+#define BACKGROUND_PAUSE_WIDTH 300
+#define BACKGROUND_PAUSE_HEIGHT 300
+#define BUTTON_WIDTH 200
+#define BUTTON_HEIGHT 30
+#define BUTTON_CONTINUE_Y 250
+#define BUTTON_BACKTOMENU_Y 300
+#define BUTTON_EXIT_Y 350
+
 class Game
 {
 	enum GAME_STATES
@@ -40,6 +50,8 @@ class Game
 
 private:
 	sf::RenderWindow *win = nullptr;
+	bool _paused;
+	sf::Uint32 char_entered;
 
 	//Textures
 	sf::Texture tex_tiles;
@@ -53,6 +65,12 @@ private:
 	unsigned int points;
 	sf::Text txt_points;
 	sf::Text txt_gameover;
+
+	sf::RectangleShape pause_background;
+	sf::Text txt_pause;
+	qiwi::Button *button_continue = nullptr;
+	qiwi::Button *button_backtomenu = nullptr;
+	qiwi::Button *button_exit = nullptr;
 
 	Mapa *map = nullptr;
 	Pacman *pacman = nullptr;
@@ -70,6 +88,9 @@ private:
 
 	void draw_coins();
 	void draw_lives();
+
+	void pause_update();
+	void draw_pause();
 public:
 	Game(sf::RenderWindow &win);
 	~Game();

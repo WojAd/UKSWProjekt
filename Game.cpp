@@ -3,6 +3,7 @@
 Game::Game(sf::RenderWindow &win)
 {
 	this->win = &win;
+	_paused = false;
 	sf::Vector2f resolution = win.getView().getSize();
 	state = READY;
 
@@ -28,6 +29,42 @@ Game::Game(sf::RenderWindow &win)
 		txt_go_size.x = txt_gameover.getLocalBounds().left + txt_gameover.getLocalBounds().width;
 		txt_go_size.y = txt_gameover.getLocalBounds().top + txt_gameover.getLocalBounds().height;
 		txt_gameover.setPosition(resolution.x/2 - txt_go_size.x/2, resolution.y/2 - txt_go_size.y/2);
+
+		txt_pause.setFont(fnt_default);
+		txt_pause.setCharacterSize(TXT_POINTS_SIZE);
+		txt_pause.setString(L"PAUZA");
+		float txt_p_width;
+		txt_p_width = txt_pause.getLocalBounds().left + txt_pause.getLocalBounds().width;
+		txt_pause.setPosition(sf::Vector2f(WINDOW_WIDTH/2 - txt_p_width / 2, TXT_PAUSE_Y));
+		txt_pause.setFillColor(sf::Color::White);
+
+		pause_background.setSize(sf::Vector2f(BACKGROUND_PAUSE_WIDTH, BACKGROUND_PAUSE_HEIGHT));
+		pause_background.setFillColor(sf::Color(25,25,25));
+		pause_background.setPosition(sf::Vector2f(WINDOW_WIDTH / 2 - BACKGROUND_PAUSE_WIDTH / 2, WINDOW_HEIGHT / 2 - BACKGROUND_PAUSE_HEIGHT / 2));
+
+		button_continue = new qiwi::Button(sf::Vector2f(BUTTON_WIDTH,BUTTON_HEIGHT), sf::Vector2f(WINDOW_WIDTH/2 - BUTTON_WIDTH/2, BUTTON_CONTINUE_Y));
+		button_continue->setTextFont(fnt_default);
+		button_continue->setTextCharSize(TXT_POINTS_SIZE);
+		button_continue->setIdleColor(sf::Color(128, 128, 128));
+		button_continue->setHoverColor(sf::Color(200, 200, 200));
+		button_continue->setPressColor(sf::Color(50, 50, 50));
+		button_continue->setTextString(L"Wróæ do gry");
+
+		button_backtomenu = new qiwi::Button(sf::Vector2f(BUTTON_WIDTH, BUTTON_HEIGHT), sf::Vector2f(WINDOW_WIDTH / 2 - BUTTON_WIDTH / 2, BUTTON_BACKTOMENU_Y));
+		button_backtomenu->setTextFont(fnt_default);
+		button_backtomenu->setTextCharSize(TXT_POINTS_SIZE);
+		button_backtomenu->setIdleColor(sf::Color(128, 128, 128));
+		button_backtomenu->setHoverColor(sf::Color(200, 200, 200));
+		button_backtomenu->setPressColor(sf::Color(50, 50, 50));
+		button_backtomenu->setTextString(L"Powrót do menu");
+
+		button_exit = new qiwi::Button(sf::Vector2f(BUTTON_WIDTH, BUTTON_HEIGHT), sf::Vector2f(WINDOW_WIDTH / 2 - BUTTON_WIDTH / 2, BUTTON_EXIT_Y));
+		button_exit->setTextFont(fnt_default);
+		button_exit->setTextCharSize(TXT_POINTS_SIZE);
+		button_exit->setIdleColor(sf::Color(128, 128, 128));
+		button_exit->setHoverColor(sf::Color(200, 200, 200));
+		button_exit->setPressColor(sf::Color(50, 50, 50));
+		button_exit->setTextString(L"Wyjœcie");
 	}
 
 
@@ -83,11 +120,17 @@ Game::~Game()
 	pacman = nullptr;
 	delete coin;
 	coin = nullptr;
+
+	delete button_continue;
+	delete button_backtomenu;
+	delete button_exit;
+
 	ghosts.clear();
 }
 
 void Game::handleEvents()
 {
+	char_entered = NULL;
 	sf::Event ev;
 	while (win->pollEvent(ev))
 	{
@@ -95,6 +138,9 @@ void Game::handleEvents()
 		{
 		case sf::Event::Closed:
 			win->close();
+			break;
+		case sf::Event::TextEntered:
+			char_entered = ev.text.unicode;
 			break;
 		default:
 			break;
@@ -104,21 +150,29 @@ void Game::handleEvents()
 
 void Game::update()
 {
-	switch (state)
+	if (_paused)
+		pause_update();
+	else
 	{
-	case READY:
-		state = RUNNING;// CHANGE!
-	case RUNNING:
-		game_running();
-		break;
-	case LOSE_LIFE:
-		lose_life();
-		break;
-	case GAME_OVER:
-		game_over();
-		break;
-	default:
-		break;
+		if (char_entered == 27)
+			_paused = !_paused;
+
+		switch (state)
+		{
+		case READY:
+			state = RUNNING;// CHANGE!
+		case RUNNING:
+			game_running();
+			break;
+		case LOSE_LIFE:
+			lose_life();
+			break;
+		case GAME_OVER:
+			game_over();
+			break;
+		default:
+			break;
+		}
 	}
 }
 
@@ -140,6 +194,11 @@ void Game::draw()
 
 	if (state == GAME_OVER)
 		win->draw(txt_gameover);
+
+	if (_paused)
+	{
+		draw_pause();
+	}
 }
 
 /*----------------------*/
@@ -244,4 +303,30 @@ void Game::game_over()
 	{
 		frame_time++;
 	}
+}
+
+void Game::draw_pause()
+{
+	win->draw(pause_background);
+	win->draw(txt_pause);
+	win->draw(*button_continue);
+	win->draw(*button_backtomenu);
+	win->draw(*button_exit);
+}
+
+void Game::pause_update()
+{
+	if (char_entered == 27)
+		_paused = !_paused;
+
+	button_continue->update(*win);
+	button_backtomenu->update(*win);
+	button_exit->update(*win);
+
+	if (button_continue->clicked())
+		_paused = false;
+	else if (button_backtomenu->clicked())
+		;
+	else if (button_exit->clicked())
+		win->close();
 }
