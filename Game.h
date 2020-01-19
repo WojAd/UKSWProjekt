@@ -45,7 +45,8 @@ class Game
 		READY,
 		RUNNING,
 		LOSE_LIFE,
-		GAME_OVER
+		GAME_OVER,
+		GAME_WON
 	};
 
 private:
@@ -85,6 +86,7 @@ private:
 	void game_running();
 	void lose_life();
 	void game_over();
+	void game_win();
 
 	void draw_coins();
 	void draw_lives();

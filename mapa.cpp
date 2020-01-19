@@ -84,6 +84,7 @@ bool Mapa::importMap(const char *path)
 			return false;
 		}
 	}
+	_coinquantity = 0;
 	for (int i = 0; i < MAP_HEIGHT; i++)
 	{
 		for (int j = 0; j < MAP_WIDTH; j++)
@@ -94,7 +95,10 @@ bool Mapa::importMap(const char *path)
 				this->_map[j][i] = BLANK;
 
 			if (this->_map[j][i] == CORRIDOR)
+			{
 				_coinmap[j][i] = true;
+				_coinquantity++;
+			}
 			else
 				_coinmap[j][i] = false;
 		}
@@ -146,6 +150,14 @@ void Mapa::setCoinTile(unsigned int x, unsigned int y, bool coin)
 	else if (y >= MAP_HEIGHT)
 		y = MAP_HEIGHT - 1;
 
+	if (_coinmap[x][y] != coin)
+	{
+		if (coin)
+			_coinquantity++;
+		else
+			_coinquantity--;
+	}
+
 	_coinmap[x][y] = coin;
 }
 
@@ -162,6 +174,11 @@ bool Mapa::getCoinTile(unsigned int x, unsigned int y)
 		y = MAP_HEIGHT - 1;
 
 	return _coinmap[x][y];
+}
+
+short Mapa::getCoinQuantity()
+{
+	return _coinquantity;
 }
 
 sf::Vector2f Mapa::tilecoordsToPixels(unsigned int x, unsigned int y)

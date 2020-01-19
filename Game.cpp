@@ -23,7 +23,7 @@ Game::Game(sf::RenderWindow &win)
 
 		txt_gameover.setFont(fnt_default);
 		txt_gameover.setCharacterSize(TXT_GAMEOVER_SIZE);
-		txt_gameover.setString(L"GAME OVER!");
+		txt_gameover.setString(L"GAME OVER");
 		txt_gameover.setFillColor(sf::Color::Blue);
 		sf::Vector2f txt_go_size;
 		txt_go_size.x = txt_gameover.getLocalBounds().left + txt_gameover.getLocalBounds().width;
@@ -64,7 +64,7 @@ Game::Game(sf::RenderWindow &win)
 		button_exit->setIdleColor(sf::Color(128, 128, 128));
 		button_exit->setHoverColor(sf::Color(200, 200, 200));
 		button_exit->setPressColor(sf::Color(50, 50, 50));
-		button_exit->setTextString(L"Wyjœcie");
+		button_exit->setTextString(L"Wyjście");
 	}
 
 
@@ -170,6 +170,9 @@ void Game::update()
 		case GAME_OVER:
 			game_over();
 			break;
+		case GAME_WON:
+			game_win();
+			break;
 		default:
 			break;
 		}
@@ -193,6 +196,8 @@ void Game::draw()
 	draw_lives();
 
 	if (state == GAME_OVER)
+		win->draw(txt_gameover);
+	else if (state == GAME_WON)
 		win->draw(txt_gameover);
 
 	if (_paused)
@@ -232,7 +237,19 @@ void Game::draw_lives()
 /*MAJOR*/
 void Game::game_running()
 {
+	if (map->getCoinQuantity() <= 0)
+	{
+		state = GAME_WON;
+		txt_gameover.setString("GAME WON!");
+		frame_time = 0;
+	}
+
 	pacman->update();
+	if (pacman->getPosition().x <= map->getOffset())
+		pacman->setPosition(sf::Vector2f(map->tilecoordsToPixels(MAP_WIDTH - 1, 0).x, pacman->getPosition().y));
+	else if (pacman->getPosition().x >= map->tilecoordsToPixels(MAP_WIDTH - 1, 0).x)
+		pacman->setPosition(sf::Vector2f(map->tilecoordsToPixels(0, 0).x, pacman->getPosition().y));
+
 	for (auto &i : ghosts)
 	{
 		i.update(pacman->getPosition().x, pacman->getPosition().y);
@@ -267,7 +284,10 @@ void Game::lose_life()
 	if (frame_time >= LOSE_LIFE_FRAME_TIME)
 	{
 		if (pacman->getLives() <= 0)
+		{
 			state = GAME_OVER;
+			txt_gameover.setString("GAME OVER");
+		}
 		else
 		{
 			state = RUNNING;
@@ -293,6 +313,20 @@ void Game::lose_life()
 }
 
 void Game::game_over()
+{
+	if (frame_time >= LOSE_LIFE_FRAME_TIME)
+	{
+		go_to_menu = true;
+		reset_game();
+		frame_time = 0;
+	}
+	else
+	{
+		frame_time++;
+	}
+}
+
+void Game::game_win()
 {
 	if (frame_time >= LOSE_LIFE_FRAME_TIME)
 	{
@@ -333,6 +367,7 @@ void Game::pause_update()
 
 void Game::reset_game()
 {
+	state = RUNNING;
 	_paused = false;
 	points = 0;
 
