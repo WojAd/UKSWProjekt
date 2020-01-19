@@ -1,3 +1,7 @@
+/** \file pacman.h
+ * Plik naglowkowy dla Pacmana
+ */
+
 #ifndef PACMAN_H
 #define PACMAN_H
 
