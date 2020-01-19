@@ -48,7 +48,7 @@ Game::Game(sf::RenderWindow &win)
 		button_continue->setIdleColor(sf::Color(128, 128, 128));
 		button_continue->setHoverColor(sf::Color(200, 200, 200));
 		button_continue->setPressColor(sf::Color(50, 50, 50));
-		button_continue->setTextString(L"Wróæ do gry");
+		button_continue->setTextString(L"Wróć do gry");
 
 		button_backtomenu = new qiwi::Button(sf::Vector2f(BUTTON_WIDTH, BUTTON_HEIGHT), sf::Vector2f(WINDOW_WIDTH / 2 - BUTTON_WIDTH / 2, BUTTON_BACKTOMENU_Y));
 		button_backtomenu->setTextFont(fnt_default);
@@ -326,7 +326,33 @@ void Game::pause_update()
 	if (button_continue->clicked())
 		_paused = false;
 	else if (button_backtomenu->clicked())
-		;
+		go_to_menu = true;
 	else if (button_exit->clicked())
 		win->close();
+}
+
+void Game::reset_game()
+{
+	_paused = false;
+	points = 0;
+
+	delete pacman;
+	ghosts.clear();
+
+	pacman = new Pacman(PACMAN_START_X, PACMAN_START_Y, PACMAN_MAX_LIVES, win->getView().getSize().x, win->getView().getSize().y, map);
+	for (short i = 0; i < GHOST_AMOUNT; i++)
+	{
+		ghosts.push_back(*(new Ghost(this->win->getView().getSize().x / 2 - 40 + i * 40, this->win->getView().getSize().y / 2, map)));
+	}
+
+	delete map;
+	map = new Mapa(tex_tiles);
+	map->setCoinTile(MAP_WIDTH / 2, MAP_HEIGHT / 2, false);
+	map->setCoinTile(MAP_WIDTH / 2 + 1, MAP_HEIGHT / 2, false);
+	map->setCoinTile(MAP_WIDTH / 2 - 1, MAP_HEIGHT / 2, false);
+
+	map->setCoinTile(MAP_WIDTH / 2, MAP_HEIGHT / 2 - 1, false);
+
+	sf::Vector2u pacman_tile = map->pixelsToTilecoords(sf::Vector2f(PACMAN_START_X, PACMAN_START_Y));
+	map->setCoinTile(pacman_tile.x, pacman_tile.y, false);
 }

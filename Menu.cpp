@@ -41,7 +41,7 @@ Menu::Menu(sf::RenderWindow &win)
 	exit->setIdleColor(sf::Color(128, 128, 128));
 	exit->setHoverColor(sf::Color(200, 200, 200));
 	exit->setPressColor(sf::Color(50, 50, 50));
-	exit->setTextString(L"Wyjœcie");
+	exit->setTextString(L"Wyjście");
 }
 
 Menu::~Menu()
