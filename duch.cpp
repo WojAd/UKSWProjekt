@@ -1,8 +1,6 @@
 #include "duch.h"
 #include <Windows.h>
 
-
-
 Ghost::Ghost(int x, int y, Mapa* map) {
 	if (!texture.loadFromFile("ghost.png")) {
 		cout << "Nie mozna otworzyc pliku ghost.png" << endl;

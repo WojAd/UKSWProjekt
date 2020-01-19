@@ -29,14 +29,14 @@
 
 #define TXT_GAMEOVER_SIZE 72
 
-#define TXT_PAUSE_Y 250
+#define TXT_PAUSE_Y 200
 #define BACKGROUND_PAUSE_WIDTH 300
 #define BACKGROUND_PAUSE_HEIGHT 300
 #define BUTTON_WIDTH 200
 #define BUTTON_HEIGHT 30
-#define BUTTON_CONTINUE_Y 300
-#define BUTTON_BACKTOMENU_Y 350
-#define BUTTON_EXIT_Y 400
+#define BUTTON_CONTINUE_Y 250
+#define BUTTON_BACKTOMENU_Y 300
+#define BUTTON_EXIT_Y 350
 
 class Game
 {
@@ -98,8 +98,5 @@ public:
 	void handleEvents();
 	void update();
 	void draw();
-
-	bool go_to_menu = false;
-	void reset_game();
 };
 #endif
