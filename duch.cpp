@@ -1,10 +1,7 @@
 #include "duch.h"
 #include <Windows.h>
 
-Ghost::Ghost(int x, int y, Mapa* map) {
-	if (!texture.loadFromFile("ghost.png")) {
-		cout << "Nie mozna otworzyc pliku ghost.png" << endl;
-	}
+Ghost::Ghost(int x, int y, Mapa* map, sf::Texture &texture) {
 	sprite.setTexture(texture);
 	sprite.setOrigin(IMG_WIDTH / 2.0f, IMG_HEIGHT / 2.0f);
 	sprite.setPosition(x, y);

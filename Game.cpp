@@ -87,9 +87,18 @@ Game::Game(sf::RenderWindow &win)
 	}
 
 	pacman = new Pacman(PACMAN_START_X, PACMAN_START_Y, PACMAN_MAX_LIVES, win.getView().getSize().x, win.getView().getSize().y, map);
-	for (short i = 0; i < GHOST_AMOUNT; i++)
+
+	if (!tex_ghost.loadFromFile(TEXPATH_GHOST))
 	{
-		ghosts.push_back(*(new Ghost(this->win->getView().getSize().x / 2 - 40 + i * 40, this->win->getView().getSize().y / 2, map)));
+		win.close();
+		getchar();
+	}
+	else
+	{
+		for (short i = 0; i < GHOST_AMOUNT; i++)
+		{
+			ghosts.push_back(*(new Ghost(this->win->getView().getSize().x / 2 - 40 + i * 40, this->win->getView().getSize().y / 2, map, tex_ghost)));
+		}
 	}
 
 	if (!tex_life.loadFromFile(TEXPATH_LIFE))
@@ -377,7 +386,7 @@ void Game::reset_game()
 	pacman = new Pacman(PACMAN_START_X, PACMAN_START_Y, PACMAN_MAX_LIVES, win->getView().getSize().x, win->getView().getSize().y, map);
 	for (short i = 0; i < GHOST_AMOUNT; i++)
 	{
-		ghosts.push_back(*(new Ghost(this->win->getView().getSize().x / 2 - 40 + i * 40, this->win->getView().getSize().y / 2, map)));
+		ghosts.push_back(*(new Ghost(this->win->getView().getSize().x / 2 - 40 + i * 40, this->win->getView().getSize().y / 2, map, tex_ghost)));
 	}
 
 	delete map;

@@ -8,6 +8,7 @@
 #define TEXPATH_LIFE "resources/textures/life.png"
 #define TEXPATH_PACMAN "resources/textures/pacman_animation.png"
 #define TEXPATH_COIN "resources/textures/coin.png"
+#define TEXPATH_GHOST "resources/textures/ghost.png"
 
 #define FONTPATH_DEFAULT "resources/Arbutus.ttf"
 

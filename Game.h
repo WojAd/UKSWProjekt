@@ -70,7 +70,7 @@ private:
 
 	//Textures
 	sf::Texture tex_tiles;/**< Tekstura kafelków mapy*/
-	//sf::Texture tex_pacman;
+	sf::Texture tex_ghost;/**< Tekstura dla duchów*/
 	sf::Texture tex_life;/**< Tekstura dla ikony pozosta³ych szans gracza*/
 	sf::Texture tex_coin;/**< Tekstura dla monet*/
 

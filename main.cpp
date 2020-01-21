@@ -71,8 +71,8 @@ int main() {
 		frames++;
 		if (clk.getElapsedTime().asMilliseconds() >= 1000)
 		{
-			system("cls");
-			std::cout << "FPS: " << frames;
+			//system("cls");
+			std::cout << "FPS: " << frames << std::endl;
 			clk.restart();
 			frames = 0;
 		}

@@ -169,7 +169,7 @@ public:
 	* /param map
 	* @author Adrian Wojciechowski
 	*/
-	Ghost(int x, int y, Mapa* map);
+	Ghost(int x, int y, Mapa* map, sf::Texture &texture);
 	/**
 	* Destruktor
 	* @author Adrian Wojciechowski
