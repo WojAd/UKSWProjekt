@@ -1,3 +1,19 @@
+/*! \mainpage Pacman
+ *
+ * \section intro_sec Wprowadzenie
+ *
+ * Projekt Pacmana wykonany w C++ z wykorzystaniem biblioteki SFML. 
+ * 
+ * \section Instrukcja
+ * \subsection install_sec Uruchomienie: 
+ * wcisnij przycisk Graj aby zaczac lub Zresetuj aby przywrocic stan poczatkowy gry
+ * \subsection move_sec Poruszanie: 
+ * Pacmana poruszamy strzalkami. Otwarte korytarze po lewej i prawej stronie mapy umozliwiaja teleportacji miedzy soba.
+ * \subsection point_sec Cel gry: 
+ * Celem gry jest zebranie wszystkich monet zanim Pacman zostanie zjedzony przez duchy.
+ * 
+ */
+
 #include <iostream>
 #include <SFML/Graphics.hpp>
 #include "Game.h"
